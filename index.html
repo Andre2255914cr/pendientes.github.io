@@ -3,79 +3,59 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Panel de Pendientes - ERCONNECT</title>
+    <title>Control de Pendientes - Andree</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
 </head>
-<body class="bg-gray-50 font-sans">
+<body class="bg-gray-100 p-4 md:p-8">
 
-    <header class="bg-indigo-900 text-white p-4 shadow-md flex justify-between items-center">
-        <div class="flex items-center gap-4">
-            <h1 class="text-xl font-bold tracking-widest">ERCONNECT</h1>
-            <span class="bg-indigo-700 px-3 py-1 rounded-full text-xs uppercase tracking-tighter">Andree Cordero</span>
-        </div>
-        <button onclick="document.getElementById('modal-proyecto').classList.remove('hidden')" class="bg-indigo-500 hover:bg-indigo-400 text-white px-4 py-2 rounded-lg text-sm font-bold transition">
-            <i class="fas fa-plus mr-2"></i> NUEVO PROYECTO
-        </button>
-    </header>
-
-    <main class="p-6">
-        <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
-            <div class="bg-white p-4 rounded-xl shadow-sm border-l-4 border-blue-500">
-                <p class="text-gray-500 text-xs font-bold uppercase">Total</p>
-                <h3 id="count-total" class="text-2xl font-black">0</h3>
-            </div>
-            <div class="bg-white p-4 rounded-xl shadow-sm border-l-4 border-yellow-500">
-                <p class="text-gray-500 text-xs font-bold uppercase">En Proceso</p>
-                <h3 id="count-proceso" class="text-2xl font-black text-yellow-600">0</h3>
-            </div>
-            <div class="bg-white p-4 rounded-xl shadow-sm border-l-4 border-red-500">
-                <p class="text-gray-500 text-xs font-bold uppercase">Urgentes</p>
-                <h3 id="count-urgente" class="text-2xl font-black text-red-600">0</h3>
-            </div>
-            <div class="bg-white p-4 rounded-xl shadow-sm border-l-4 border-green-500">
-                <p class="text-gray-500 text-xs font-bold uppercase">Completados</p>
-                <h3 id="count-completado" class="text-2xl font-black text-green-600">0</h3>
-            </div>
+    <div class="max-w-6xl mx-auto">
+        <div class="flex justify-between items-center mb-6">
+            <h1 class="text-2xl font-bold text-gray-800">Mis Pendientes - ERCONNECT</h1>
+            <button onclick="document.getElementById('modal').classList.remove('hidden')" class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700">
+                + Nuevo Proyecto
+            </button>
         </div>
 
-        <div class="bg-white rounded-2xl shadow-sm overflow-hidden border border-gray-100">
-            <table class="w-full text-left border-collapse">
-                <thead class="bg-gray-50 text-gray-400 text-[10px] uppercase tracking-widest border-b">
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6 text-center">
+            <div class="bg-white p-4 rounded-lg shadow"><p class="text-sm text-gray-500">Total</p><p id="count-total" class="text-xl font-bold">0</p></div>
+            <div class="bg-white p-4 rounded-lg shadow border-b-4 border-yellow-400"><p class="text-sm text-gray-500">Proceso</p><p id="count-proceso" class="text-xl font-bold">0</p></div>
+            <div class="bg-white p-4 rounded-lg shadow border-b-4 border-red-500"><p class="text-sm text-gray-500">Urgentes</p><p id="count-urgente" class="text-xl font-bold">0</p></div>
+            <div class="bg-white p-4 rounded-lg shadow border-b-4 border-green-500"><p class="text-sm text-gray-500">Listos</p><p id="count-completado" class="text-xl font-bold">0</p></div>
+        </div>
+
+        <div class="bg-white rounded-lg shadow overflow-x-auto">
+            <table class="w-full text-left">
+                <thead class="bg-gray-50 border-b">
                     <tr>
                         <th class="p-4">Cliente</th>
-                        <th class="p-4">Trámite/Contacto</th>
+                        <th class="p-4">Trámite</th>
                         <th class="p-4">Prioridad</th>
                         <th class="p-4">Estado</th>
-                        <th class="p-4">Fecha Límite</th>
+                        <th class="p-4">Fecha</th>
                         <th class="p-4">Acciones</th>
                     </tr>
                 </thead>
-                <tbody id="lista-proyectos" class="text-sm text-gray-700 divide-y">
-                    </tbody>
+                <tbody id="tabla-proyectos"></tbody>
             </table>
         </div>
-    </main>
+    </div>
 
-    <div id="modal-proyecto" class="hidden fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
-        <div class="bg-white rounded-2xl w-full max-w-md p-6 shadow-2xl">
-            <h2 class="text-lg font-bold mb-4 text-indigo-900">Registrar Pendiente</h2>
-            <form id="form-proyecto" class="space-y-4">
-                <input type="text" id="cliente" placeholder="Nombre del Cliente (Ej: BUPA)" class="w-full p-3 bg-gray-100 rounded-lg focus:ring-2 focus:ring-indigo-500 outline-none border-none" required>
-                <input type="text" id="tramite" placeholder="¿Qué hay que hacer?" class="w-full p-3 bg-gray-100 rounded-lg focus:ring-2 focus:ring-indigo-500 outline-none border-none" required>
-                
-                <div class="grid grid-cols-2 gap-4">
-                    <select id="prioridad" class="w-full p-3 bg-gray-100 rounded-lg outline-none">
-                        <option value="Baja">Baja</option>
-                        <option value="Media" selected>Media</option>
-                        <option value="Urgente">Urgente 🔥</option>
-                    </select>
-                    <input type="date" id="fecha" class="w-full p-3 bg-gray-100 rounded-lg outline-none">
-                </div>
-
-                <div class="flex gap-2 pt-2">
-                    <button type="button" onclick="document.getElementById('modal-proyecto').classList.add('hidden')" class="flex-1 py-3 text-gray-500 font-bold hover:bg-gray-50 rounded-lg transition">Cancelar</button>
-                    <button type="submit" class="flex-1 py-3 bg-indigo-600 text-white font-bold rounded-lg hover:bg-indigo-700 transition">Guardar</button>
+    <div id="modal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4">
+        <div class="bg-white p-6 rounded-xl w-full max-w-md">
+            <h2 class="text-xl font-bold mb-4">Agregar Pendiente</h2>
+            <form id="form-nuevo">
+                <input type="text" id="cliente" placeholder="Cliente (ej. BUPA)" class="w-full border p-2 mb-3 rounded" required>
+                <input type="text" id="tramite" placeholder="¿Qué hay que hacer?" class="w-full border p-2 mb-3 rounded" required>
+                <select id="prioridad" class="w-full border p-2 mb-3 rounded">
+                    <option value="Baja">Baja</option>
+                    <option value="Media" selected>Media</option>
+                    <option value="Urgente">Urgente</option>
+                </select>
+                <input type="date" id="fecha" class="w-full border p-2 mb-4 rounded">
+                <div class="flex gap-2">
+                    <button type="button" onclick="document.getElementById('modal').classList.add('hidden')" class="w-1/2 bg-gray-200 py-2 rounded">Cerrar</button>
+                    <button type="submit" class="w-1/2 bg-blue-600 text-white py-2 rounded">Guardar</button>
                 </div>
             </form>
         </div>
@@ -85,7 +65,7 @@
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getFirestore, collection, addDoc, onSnapshot, doc, updateDoc, deleteDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
-        // Configuración corregida para earrings-andree
+        // CONFIGURACIÓN REAL DE TU PROYECTO EARRINGS-ANDREE
         const firebaseConfig = {
             apiKey: "AIzaSyBxbPG2hi6Hxlro7-AvWHy3-H0qE1lThWQ",
             authDomain: "earrings-andree.firebaseapp.com",
@@ -97,75 +77,53 @@
 
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
-        const proyectosRef = collection(db, "proyectos");
+        const colRef = collection(db, "proyectos");
 
-        // GUARDAR PROYECTO
-        document.getElementById('form-proyecto').addEventListener('submit', async (e) => {
+        document.getElementById('form-nuevo').addEventListener('submit', async (e) => {
             e.preventDefault();
-            const nuevo = {
+            await addDoc(colRef, {
                 cliente: document.getElementById('cliente').value,
                 tramite: document.getElementById('tramite').value,
                 prioridad: document.getElementById('prioridad').value,
                 fecha: document.getElementById('fecha').value,
-                estado: 'En Proceso',
-                timestamp: new Date()
-            };
-
-            try {
-                await addDoc(proyectosRef, nuevo);
-                document.getElementById('form-proyecto').reset();
-                document.getElementById('modal-proyecto').classList.add('hidden');
-            } catch (err) {
-                console.error("Error al guardar:", err);
-                alert("No se pudo guardar. Revisa la conexión.");
-            }
+                estado: 'En Proceso'
+            });
+            document.getElementById('form-nuevo').reset();
+            document.getElementById('modal').classList.add('hidden');
         });
 
-        // CARGAR PROYECTOS EN TIEMPO REAL
-        onSnapshot(proyectosRef, (snapshot) => {
-            const tbody = document.getElementById('lista-proyectos');
-            tbody.innerHTML = '';
-            let t = 0, p = 0, u = 0, c = 0;
-
-            snapshot.forEach((docSnap) => {
-                const data = docSnap.data();
-                const id = docSnap.id;
+        onSnapshot(colRef, (snapshot) => {
+            const list = document.getElementById('tabla-proyectos');
+            list.innerHTML = '';
+            let t=0, p=0, u=0, c=0;
+            snapshot.forEach(d => {
+                const data = d.data();
                 t++;
                 if(data.estado === 'En Proceso') p++;
                 if(data.prioridad === 'Urgente') u++;
                 if(data.estado === 'Completado') c++;
-
-                const row = `
-                    <tr class="hover:bg-gray-50 transition">
-                        <td class="p-4 font-bold text-indigo-900">${data.cliente}</td>
+                list.innerHTML += `
+                    <tr class="border-b hover:bg-gray-50">
+                        <td class="p-4 font-semibold">${data.cliente}</td>
                         <td class="p-4">${data.tramite}</td>
+                        <td class="p-4"><span class="px-2 py-1 rounded text-xs ${data.prioridad === 'Urgente' ? 'bg-red-100 text-red-700' : 'bg-blue-100 text-blue-700'}">${data.prioridad}</span></td>
+                        <td class="p-4 text-sm text-gray-500">${data.estado}</td>
+                        <td class="p-4 text-sm">${data.fecha || '-'}</td>
                         <td class="p-4">
-                            <span class="px-2 py-1 rounded text-[10px] font-bold ${data.prioridad === 'Urgente' ? 'bg-red-100 text-red-600' : 'bg-blue-100 text-blue-600'}">${data.prioridad}</span>
+                            <button onclick="completar('${d.id}')" class="text-green-600 mr-2"><i class="fas fa-check"></i></button>
+                            <button onclick="borrar('${d.id}')" class="text-red-400"><i class="fas fa-trash"></i></button>
                         </td>
-                        <td class="p-4 text-xs font-medium text-gray-500">${data.estado}</td>
-                        <td class="p-4 text-gray-400 font-mono">${data.fecha || '---'}</td>
-                        <td class="p-4 flex gap-2">
-                            <button onclick="marcarCompletado('${id}')" class="text-green-500 hover:text-green-700"><i class="fas fa-check-circle"></i></button>
-                            <button onclick="eliminarProyecto('${id}')" class="text-red-300 hover:text-red-600"><i class="fas fa-trash"></i></button>
-                        </td>
-                    </tr>
-                `;
-                tbody.innerHTML += row;
+                    </tr>`;
             });
-
             document.getElementById('count-total').innerText = t;
             document.getElementById('count-proceso').innerText = p;
             document.getElementById('count-urgente').innerText = u;
             document.getElementById('count-completado').innerText = c;
         });
 
-        // FUNCIONES GLOBALES
-        window.marcarCompletado = async (id) => {
-            await updateDoc(doc(db, "proyectos", id), { estado: 'Completado' });
-        };
-        window.eliminarProyecto = async (id) => {
-            if(confirm("¿Eliminar este pendiente?")) await deleteDoc(doc(db, "proyectos", id));
-        };
+        window.completar = (id) => updateDoc(doc(db, "proyectos", id), { estado: 'Completado' });
+        window.borrar = (id) => confirm("¿Borrar?") && deleteDoc(doc(db, "proyectos", id));
     </script>
 </body>
 </html>
+
