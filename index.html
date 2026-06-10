@@ -302,17 +302,22 @@
     <script>
         /*
             INSTRUCCIONES RÁPIDAS:
-            1) Publica tu Google Sheet como CSV.
-            2) Pega aquí abajo la URL CSV publicada.
+            1) Este dashboard ya lee, crea, edita y borra usando Apps Script.
+            2) Apps Script se conecta directo a Google Sheets, sin usar CSV publicado.
             3) Respeta estos encabezados en la fila 1:
                No de Proyecto | Cliente | Oportunidad | Notas/Descripción de Odoo | Etapa | Ingreso esperado | Prioridad | Fecha Limite | Area | Porcentaje
         */
-        const GOOGLE_SHEETS_CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vRdjZOtdBZJxjUxQRDQdcCsuZkcaIhCRDlYKp2qNfIMMshYI7isuUxPCveWsQaN-tHdPLO3KonFk8en/pub?output=csv";
         const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxwXLiMEbHxEouEXuakc2deAAHzMtVV7NE5-ozsgq21Zzmn27W3Yqj2wdF1Hgfm34TL/exec";
 
         let cacheProyectos = [];
         let clienteSeleccionado = null;
         let periodosInicializados = false;
+
+        // Mantiene en pantalla los cambios hechos desde el HTML aunque el CSV publicado tarde en actualizarse.
+        const TIEMPO_PROTECCION_CAMBIOS_MS = 120000;
+        const cambiosLocalesPorFila = new Map();
+        const filasEliminadasLocales = new Map();
+        const registrosCreadosLocales = new Map();
 
         const formatMoneda = (valor) => new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(valor || 0);
         const NOMBRES_MESES = ["Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"];
@@ -514,8 +519,8 @@
         };
 
         const cargarDatosDesdeGoogleSheets = async (modoSilencioso = false) => {
-            if (!GOOGLE_SHEETS_CSV_URL || GOOGLE_SHEETS_CSV_URL.includes('PEGA_AQUI')) {
-                console.warn('Falta configurar la URL CSV de Google Sheets.');
+            if (!APPS_SCRIPT_URL || APPS_SCRIPT_URL.includes('PEGA_AQUI')) {
+                console.warn('Falta configurar la URL de Apps Script.');
                 cacheProyectos = [];
                 actualizarSelectorPeriodos(cacheProyectos);
                 window.forzarRecalculoFinanciero();
@@ -523,22 +528,33 @@
             }
 
             try {
-                const respuesta = await fetch(GOOGLE_SHEETS_CSV_URL + (GOOGLE_SHEETS_CSV_URL.includes('?') ? '&' : '?') + 'nocache=' + Date.now());
-                if (!respuesta.ok) throw new Error('No se pudo leer Google Sheets');
+                const separador = APPS_SCRIPT_URL.includes('?') ? '&' : '?';
+                const respuesta = await fetch(`${APPS_SCRIPT_URL}${separador}action=read&nocache=${Date.now()}`);
+                if (!respuesta.ok) throw new Error('No se pudo leer Google Sheets desde Apps Script');
 
-                const csvText = await respuesta.text();
-                const filas = parseCSV(csvText);
+                const resultado = await respuesta.json();
+                if (!resultado.success) throw new Error(resultado.message || 'Apps Script no devolvió una respuesta válida');
+
+                const filas = resultado.data || [];
 
                 cacheProyectos = filas
-                    .map(convertirFilaSheetAProyecto)
+                    .map((fila, index) => {
+                        const proyecto = convertirFilaSheetAProyecto(fila, index);
+                        const rowIndexReal = parseInt(fila.rowIndex, 10) || (index + 2);
+                        proyecto.rowIndex = rowIndexReal;
+                        proyecto.id = `sheet-${rowIndexReal}`;
+                        return proyecto;
+                    })
                     .filter(p => p.d.no_proyecto || p.d.cliente || p.d.nombre);
+
+                cacheProyectos = aplicarCambiosLocalesPendientes(cacheProyectos);
 
                 actualizarSelectorPeriodos(cacheProyectos);
                 window.forzarRecalculoFinanciero();
             } catch (error) {
-                console.error('Error cargando Google Sheets:', error);
+                console.error('Error cargando datos desde Apps Script:', error);
                 if (!modoSilencioso) {
-                    alert('No se pudo cargar Google Sheets. Revisa que la hoja esté publicada como CSV y que la URL esté bien pegada en el código.');
+                    alert('No se pudo cargar la información desde Apps Script. Revisa que la URL /exec esté correcta y que la implementación esté activa.');
                 }
             }
         };
@@ -697,6 +713,68 @@
             progreso: parseInt(data.porcentaje) || 0
         });
 
+        const limpiarCambiosLocalesExpirados = () => {
+            const ahora = Date.now();
+
+            cambiosLocalesPorFila.forEach((valor, key) => {
+                if (ahora - valor.timestamp > TIEMPO_PROTECCION_CAMBIOS_MS) cambiosLocalesPorFila.delete(key);
+            });
+
+            filasEliminadasLocales.forEach((timestamp, key) => {
+                if (ahora - timestamp > TIEMPO_PROTECCION_CAMBIOS_MS) filasEliminadasLocales.delete(key);
+            });
+
+            registrosCreadosLocales.forEach((valor, key) => {
+                if (ahora - valor.timestamp > TIEMPO_PROTECCION_CAMBIOS_MS) registrosCreadosLocales.delete(key);
+            });
+        };
+
+        const aplicarCambiosLocalesPendientes = (proyectos) => {
+            limpiarCambiosLocalesExpirados();
+
+            let resultado = proyectos
+                .filter(p => !filasEliminadasLocales.has(p.rowIndex))
+                .map(p => {
+                    const cambioLocal = cambiosLocalesPorFila.get(p.rowIndex);
+                    if (!cambioLocal) return p;
+
+                    return {
+                        ...p,
+                        d: {
+                            ...p.d,
+                            ...cambioLocal.dataLocal
+                        }
+                    };
+                });
+
+            registrosCreadosLocales.forEach((valor, key) => {
+                const yaExisteEnCSV = resultado.some(p =>
+                    limpiarTexto(p.d.no_proyecto) === limpiarTexto(valor.proyecto.d.no_proyecto) &&
+                    limpiarTexto(p.d.cliente) === limpiarTexto(valor.proyecto.d.cliente) &&
+                    limpiarTexto(p.d.nombre) === limpiarTexto(valor.proyecto.d.nombre)
+                );
+
+                if (!yaExisteEnCSV) {
+                    resultado.unshift(valor.proyecto);
+                } else {
+                    registrosCreadosLocales.delete(key);
+                }
+            });
+
+            return resultado;
+        };
+
+        const refrescarVistaActual = () => {
+            actualizarSelectorPeriodos(cacheProyectos);
+            window.forzarRecalculoFinanciero();
+        };
+
+        const sincronizarEnSegundoPlano = () => {
+            setTimeout(() => {
+                cargarDatosDesdeGoogleSheets(true);
+            }, 8000);
+        };
+
         const enviarAppsScript = async (payload) => {
             await fetch(APPS_SCRIPT_URL, {
                 method: 'POST',
@@ -726,17 +804,39 @@
                         rowIndex: proyecto.rowIndex,
                         data: dataApps
                     });
+
+                    const index = cacheProyectos.findIndex(p => p.id === id);
+                    if (index >= 0) {
+                        cacheProyectos[index].d = dataLocal;
+                    }
+
+                    cambiosLocalesPorFila.set(proyecto.rowIndex, {
+                        timestamp: Date.now(),
+                        dataLocal
+                    });
                 } else {
                     await enviarAppsScript({
                         action: 'create',
                         data: dataApps
                     });
+
+                    const tempId = `local-${Date.now()}`;
+                    const nuevoProyecto = {
+                        id: tempId,
+                        rowIndex: null,
+                        d: dataLocal
+                    };
+
+                    cacheProyectos.unshift(nuevoProyecto);
+                    registrosCreadosLocales.set(tempId, {
+                        timestamp: Date.now(),
+                        proyecto: nuevoProyecto
+                    });
                 }
 
                 cerrarModal();
-                await new Promise(resolve => setTimeout(resolve, 1200));
-                await cargarDatosDesdeGoogleSheets();
-                alert('Cambios guardados en Google Sheets.');
+                refrescarVistaActual();
+                sincronizarEnSegundoPlano();
             } catch (error) {
                 console.error('Error guardando en Google Sheets:', error);
                 alert('No se pudo guardar en Google Sheets. Revisa la URL de Apps Script y la implementación.');
@@ -767,20 +867,24 @@
             if (!confirm("¿Eliminar este registro de Google Sheets?")) return;
 
             const proyecto = cacheProyectos.find(p => p.id === id);
-            if (!proyecto || !proyecto.rowIndex) {
-                alert('No se encontró la fila original en Google Sheets. Recarga la página e intenta de nuevo.');
+            if (!proyecto) {
+                alert('No se encontró el registro en la vista actual.');
                 return;
             }
 
             try {
-                await enviarAppsScript({
-                    action: 'delete',
-                    rowIndex: proyecto.rowIndex
-                });
+                if (proyecto.rowIndex) {
+                    await enviarAppsScript({
+                        action: 'delete',
+                        rowIndex: proyecto.rowIndex
+                    });
 
-                await new Promise(resolve => setTimeout(resolve, 1200));
-                await cargarDatosDesdeGoogleSheets();
-                alert('Registro eliminado de Google Sheets.');
+                    filasEliminadasLocales.set(proyecto.rowIndex, Date.now());
+                }
+
+                cacheProyectos = cacheProyectos.filter(p => p.id !== id);
+                refrescarVistaActual();
+                sincronizarEnSegundoPlano();
             } catch (error) {
                 console.error('Error eliminando en Google Sheets:', error);
                 alert('No se pudo eliminar en Google Sheets. Revisa la URL de Apps Script y la implementación.');
