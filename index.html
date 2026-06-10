@@ -52,6 +52,9 @@
                         <button onclick="exportarExcel()" class="bg-emerald-500 hover:bg-emerald-600 text-white px-4 py-2 rounded-xl text-xs font-bold transition flex items-center gap-2 shadow-sm">
                             <i class="fas fa-file-excel"></i> EXCEL
                         </button>
+                        <button onclick="actualizarDatosManual()" class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-xl text-xs font-bold transition flex items-center gap-2 shadow-sm">
+                            <i class="fas fa-sync-alt"></i> ACTUALIZAR
+                        </button>
                         <button onclick="abrirModal()" class="bg-white text-purple-900 hover:bg-purple-50 px-4 py-2 rounded-xl text-xs font-bold transition shadow-sm">
                             <i class="fas fa-plus mr-1.5"></i> NUEVO PROYECTO
                         </button>
@@ -510,7 +513,7 @@
             };
         };
 
-        const cargarDatosDesdeGoogleSheets = async () => {
+        const cargarDatosDesdeGoogleSheets = async (modoSilencioso = false) => {
             if (!GOOGLE_SHEETS_CSV_URL || GOOGLE_SHEETS_CSV_URL.includes('PEGA_AQUI')) {
                 console.warn('Falta configurar la URL CSV de Google Sheets.');
                 cacheProyectos = [];
@@ -534,7 +537,24 @@
                 window.forzarRecalculoFinanciero();
             } catch (error) {
                 console.error('Error cargando Google Sheets:', error);
-                alert('No se pudo cargar Google Sheets. Revisa que la hoja esté publicada como CSV y que la URL esté bien pegada en el código.');
+                if (!modoSilencioso) {
+                    alert('No se pudo cargar Google Sheets. Revisa que la hoja esté publicada como CSV y que la URL esté bien pegada en el código.');
+                }
+            }
+        };
+
+        window.actualizarDatosManual = async () => {
+            const botonActualizar = event?.currentTarget;
+            if (botonActualizar) {
+                botonActualizar.disabled = true;
+                botonActualizar.innerHTML = '<i class="fas fa-spinner fa-spin"></i> ACTUALIZANDO';
+            }
+
+            await cargarDatosDesdeGoogleSheets(false);
+
+            if (botonActualizar) {
+                botonActualizar.disabled = false;
+                botonActualizar.innerHTML = '<i class="fas fa-sync-alt"></i> ACTUALIZAR';
             }
         };
 
@@ -978,7 +998,18 @@
             XLSX.writeFile(wb, "Reporte_Pipeline_Estructurado.xlsx");
         };
 
-        document.addEventListener('DOMContentLoaded', cargarDatosDesdeGoogleSheets);
+        document.addEventListener('DOMContentLoaded', () => {
+            cargarDatosDesdeGoogleSheets(false);
+
+            // Recarga automática cada 30 segundos.
+            // Si el modal está abierto, no actualiza para no borrar lo que estés escribiendo.
+            setInterval(() => {
+                const modalAbierto = !document.getElementById('modal-proyecto').classList.contains('hidden');
+                if (!modalAbierto) {
+                    cargarDatosDesdeGoogleSheets(true);
+                }
+            }, 30000);
+        });
     </script>
 
 </body>
