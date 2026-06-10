@@ -12,283 +12,921 @@
         .card-shadow { box-shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.05); }
     </style>
 </head>
-<body class="bg-[#f8fafc] font-sans">
+<body class="bg-[#f8fafc] font-sans antialiased">
 
-    <header class="er-gradient text-white p-4 shadow-lg flex justify-between items-center sticky top-0 z-40">
-        <div class="flex items-center gap-6">
-            <h1 class="text-2xl font-black tracking-tighter">ERCONNECT</h1>
-            <div class="hidden md:block">
-                <p class="text-sm font-bold leading-tight">Andree Cordero</p>
-                <p class="text-[10px] text-purple-200 uppercase tracking-widest">Ingeniero en Preventa</p>
-            </div>
-        </div>
-        <div class="flex gap-3">
-            <button onclick="exportarExcel()" class="bg-emerald-500 hover:bg-emerald-600 text-white px-4 py-2 rounded-xl text-xs font-bold transition flex items-center gap-2">
-                <i class="fas fa-file-excel"></i> EXCEL
-            </button>
-            <button onclick="abrirModal()" class="bg-white text-purple-900 hover:bg-purple-50 px-5 py-2 rounded-xl text-xs font-bold transition shadow-md">
-                <i class="fas fa-plus mr-2"></i> NUEVO PROYECTO
-            </button>
-        </div>
-    </header>
+    <!-- CONTENEDOR GENERAL -->
+    <div class="flex h-screen overflow-hidden w-full">
 
-    <main class="max-w-[1600px] mx-auto p-6">
-        <div class="grid grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-            <div class="bg-white p-5 rounded-3xl card-shadow border-b-4 border-purple-500">
-                <p class="text-gray-400 text-[10px] font-black uppercase mb-1">Total Proyectos</p>
-                <h3 id="count-total" class="text-3xl font-black text-gray-800">0</h3>
+        <!-- SIDEBAR IZQUIERDO -->
+        <aside class="w-72 bg-white border-r border-gray-100 flex flex-col h-full shrink-0 shadow-sm z-50">
+            <div class="p-5 border-b border-gray-50 flex items-center gap-3">
+                <div class="bg-gradient-to-tr from-purple-600 to-indigo-500 text-white p-2.5 rounded-xl shadow-md shadow-indigo-100">
+                    <i class="fas fa-bolt text-lg"></i>
+                </div>
+                <div>
+                    <h1 class="text-xl font-black tracking-tighter text-gray-800 leading-none">Sales CC</h1>
+                    <span class="text-[9px] font-bold uppercase tracking-wider text-gray-400">Odoo Pipeline</span>
+                </div>
             </div>
-            <div class="bg-white p-5 rounded-3xl card-shadow border-b-4 border-amber-400">
-                <p class="text-gray-400 text-[10px] font-black uppercase mb-1">En Proceso</p>
-                <h3 id="count-proceso" class="text-3xl font-black text-amber-500">0</h3>
-            </div>
-            <div class="bg-white p-5 rounded-3xl card-shadow border-b-4 border-rose-500">
-                <p class="text-gray-400 text-[10px] font-black uppercase mb-1">Urgentes / Alta</p>
-                <h3 id="count-urgente" class="text-3xl font-black text-rose-600">0</h3>
-            </div>
-            <div class="bg-white p-5 rounded-3xl card-shadow border-b-4 border-emerald-500">
-                <p class="text-gray-400 text-[10px] font-black uppercase mb-1">Completados</p>
-                <h3 id="count-completado" class="text-3xl font-black text-emerald-600">0</h3>
-            </div>
-        </div>
 
-        <div class="flex flex-col md:flex-row gap-4 mb-6 items-center justify-between bg-white p-4 rounded-2xl card-shadow">
-            <div class="relative w-full md:w-96">
-                <i class="fas fa-search absolute left-4 top-3.5 text-gray-300"></i>
-                <input type="text" id="buscador" placeholder="Buscar cliente o trámite..." class="w-full pl-12 pr-4 py-3 bg-gray-50 rounded-xl outline-none focus:ring-2 focus:ring-purple-500 text-sm">
+            <div class="p-4 flex-1 overflow-y-auto space-y-1">
+                <p class="text-[10px] font-black uppercase text-gray-400 px-3 mb-3 tracking-widest">Cuentas Activas</p>
+                <div class="space-y-1" id="lista-cuentas-sidebar"></div>
             </div>
-            <div class="flex gap-2 w-full md:w-auto">
-                <select id="filtro-estado" class="flex-1 md:w-48 p-3 bg-gray-50 rounded-xl text-sm outline-none border-none">
-                    <option value="Todos">Todos los estados</option>
-                    <option value="Pendiente">Pendiente</option>
-                    <option value="En Proceso">En Proceso</option>
-                    <option value="Completado">Completado</option>
-                </select>
-            </div>
-        </div>
+        </aside>
 
-        <div class="bg-white rounded-[2rem] card-shadow overflow-hidden border border-gray-100">
-            <div class="overflow-x-auto">
-                <table class="w-full text-left">
-                    <thead class="bg-gray-50/50 text-gray-400 text-[10px] uppercase tracking-[0.2em] border-b border-gray-100">
-                        <tr>
-                            <th class="p-6">Cliente / Empresa</th>
-                            <th class="p-6">Tarea y Solución</th>
-                            <th class="p-6 text-center">Prioridad</th>
-                            <th class="p-6">Progreso</th>
-                            <th class="p-6">Fecha Límite</th>
-                            <th class="p-6 text-right">Acciones</th>
-                        </tr>
-                    </thead>
-                    <tbody id="lista-proyectos" class="text-sm divide-y divide-gray-50"></tbody>
-                </table>
-            </div>
-        </div>
-    </main>
+        <!-- CONTENEDOR DERECHO -->
+        <div class="flex-1 flex flex-col h-full overflow-y-auto">
 
+            <!-- HEADER SUPERIOR -->
+            <header class="er-gradient text-white p-5 shadow-md flex justify-between items-center sticky top-0 z-40">
+                <div>
+                    <h2 class="text-lg font-black tracking-tight" id="titulo-vista">Todos los pendientes</h2>
+                    <p class="text-[11px] text-purple-200 font-medium uppercase tracking-wider">Martes, 2 de Junio de 2026</p>
+                </div>
+                
+                <div class="flex items-center gap-6">
+                    <div class="text-right hidden sm:block">
+                    </div>
+                    <div class="flex gap-2.5">
+                        <button onclick="exportarExcel()" class="bg-emerald-500 hover:bg-emerald-600 text-white px-4 py-2 rounded-xl text-xs font-bold transition flex items-center gap-2 shadow-sm">
+                            <i class="fas fa-file-excel"></i> EXCEL
+                        </button>
+                        <button onclick="abrirModal()" class="bg-white text-purple-900 hover:bg-purple-50 px-4 py-2 rounded-xl text-xs font-bold transition shadow-sm">
+                            <i class="fas fa-plus mr-1.5"></i> NUEVO PROYECTO
+                        </button>
+                    </div>
+                </div>
+            </header>
+
+            <!-- MAIN CONTENT -->
+            <main class="p-6 space-y-6 max-w-[1600px] w-full mx-auto">
+
+                <!-- 1. Bloque de Métricas de Control -->
+                <div class="grid grid-cols-2 md:grid-cols-5 gap-4">
+                    <div class="bg-white p-4 rounded-2xl card-shadow border-b-4 border-rose-500 flex flex-col justify-between">
+                        <span class="text-gray-400 text-[10px] font-black uppercase tracking-wider flex items-center gap-1.5"><span class="w-2 h-2 rounded-full bg-rose-500"></span>Alta Prioridad</span>
+                        <h3 id="count-urgente" class="text-2xl font-black text-gray-800 mt-2">0</h3>
+                    </div>
+                    <div class="bg-white p-4 rounded-2xl card-shadow border-b-4 border-amber-400 flex flex-col justify-between">
+                        <span class="text-gray-400 text-[10px] font-black uppercase tracking-wider flex items-center gap-1.5"><span class="w-2 h-2 rounded-full bg-amber-400"></span>Media Prioridad</span>
+                        <h3 id="count-proceso" class="text-2xl font-black text-gray-800 mt-2">0</h3>
+                    </div>
+                    <div class="bg-white p-4 rounded-2xl card-shadow border-b-4 border-blue-500 flex flex-col justify-between">
+                        <span class="text-gray-400 text-[10px] font-black uppercase tracking-wider flex items-center gap-1.5"><span class="w-2 h-2 rounded-full bg-blue-500"></span>Baja Prioridad</span>
+                        <h3 id="count-total" class="text-2xl font-black text-gray-800 mt-2">0</h3>
+                    </div>
+                    <div class="bg-white p-4 rounded-2xl card-shadow border-b-4 border-emerald-500 flex flex-col justify-between">
+                        <span class="text-gray-400 text-[10px] font-black uppercase tracking-wider flex items-center gap-1.5"><span class="w-2 h-2 rounded-full bg-emerald-500"></span>Ganados / Cerrados</span>
+                        <h3 id="count-completado" class="text-2xl font-black text-gray-800 mt-2">0</h3>
+                    </div>
+                    <div class="bg-white p-4 rounded-2xl card-shadow border-b-4 border-gray-400 flex flex-col justify-between col-span-2 md:col-span-1">
+                        <span class="text-gray-400 text-[10px] font-black uppercase tracking-wider flex items-center gap-1.5"><span class="w-2 h-2 rounded-full bg-gray-400"></span>Perdidos</span>
+                        <h3 id="count-perdido" class="text-2xl font-black text-gray-800 mt-2">0</h3>
+                    </div>
+                </div>
+
+                <!-- 2. Analíticas Financieras Detalladas de Odoo -->
+                <div class="bg-white p-6 rounded-3xl card-shadow border border-gray-100 space-y-5">
+                    <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+                        <div class="flex flex-wrap items-baseline gap-2">
+                            <span id="meta-ganado-main" class="text-2xl font-black text-purple-900">$0.00</span>
+                            <span id="label-meta-dinamica" class="text-xs text-gray-400 font-bold uppercase tracking-wider">CIERRE COMERCIAL EFECTIVO (META: $1,000,000.00 USD)</span>
+                            <span id="meta-porcentaje" class="bg-purple-100 text-purple-700 font-black text-[10px] px-2 py-0.5 rounded-full ml-2">0%</span>
+                        </div>
+                        
+                        <div class="flex items-center gap-2 bg-gray-50 p-1.5 rounded-xl border border-gray-100 w-full sm:w-auto">
+                            <i class="fas fa-calendar-alt text-gray-400 ml-2 text-xs"></i>
+                            <select id="filtro-periodo" class="bg-transparent text-xs font-bold text-gray-600 outline-none pr-3 py-1 cursor-pointer w-full sm:w-auto">
+                                <option value="Todos">Todos los Periodos</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- Fila de Tarjetas Interactivas de Odoo -->
+                    <div class="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-8 gap-3">
+                        <div onclick="abrirDesgloseEtapa('Enviado')" class="bg-slate-50/80 p-3 rounded-xl border border-gray-100 hover:border-blue-400 hover:bg-blue-50/20 transition-all cursor-pointer group">
+                            <span class="text-[9px] font-black text-blue-500 uppercase tracking-wider flex items-center justify-between"><span class="flex items-center gap-1"><i class="fas fa-paper-plane"></i> Enviado</span> <i class="fas fa-chevron-right opacity-0 group-hover:opacity-100 text-[8px] transition-all"></i></span>
+                            <p id="monto-enviado" class="text-sm font-black text-gray-800 mt-1">$0.00</p>
+                        </div>
+                        <div onclick="abrirDesgloseEtapa('Stand by')" class="bg-slate-50/80 p-3 rounded-xl border border-gray-100 hover:border-slate-400 hover:bg-slate-100/40 transition-all cursor-pointer group">
+                            <span class="text-[9px] font-black text-slate-500 uppercase tracking-wider flex items-center justify-between"><span class="flex items-center gap-1"><i class="fas fa-pause-circle"></i> Stand by</span> <i class="fas fa-chevron-right opacity-0 group-hover:opacity-100 text-[8px] transition-all"></i></span>
+                            <p id="monto-standby" class="text-sm font-black text-gray-800 mt-1">$0.00</p>
+                        </div>
+                        <div onclick="abrirDesgloseEtapa('Ganado sin PO')" class="bg-slate-50/80 p-3 rounded-xl border border-gray-100 hover:border-teal-500 hover:bg-teal-50/20 transition-all cursor-pointer group">
+                            <span class="text-[9px] font-black text-teal-600 uppercase tracking-wider flex items-center justify-between"><span class="flex items-center gap-1"><i class="fas fa-clipboard-check"></i> Ganado Sin PO</span> <i class="fas fa-chevron-right opacity-0 group-hover:opacity-100 text-[8px] transition-all"></i></span>
+                            <p id="monto-ganado-sin-po" class="text-sm font-black text-gray-800 mt-1">$0.00</p>
+                        </div>
+                        <div onclick="abrirDesgloseEtapa('Ganado')" class="bg-slate-50/80 p-3 rounded-xl border border-gray-100 hover:border-emerald-500 hover:bg-emerald-50/20 transition-all cursor-pointer group">
+                            <span class="text-[9px] font-black text-emerald-600 uppercase tracking-wider flex items-center justify-between"><span class="flex items-center gap-1"><i class="fas fa-check-double"></i> Ganado</span> <i class="fas fa-chevron-right opacity-0 group-hover:opacity-100 text-[8px] transition-all"></i></span>
+                            <p id="monto-ganado" class="text-sm font-black text-gray-800 mt-1">$0.00</p>
+                        </div>
+                        <div onclick="abrirDesgloseEtapa('Facturado')" class="bg-slate-50/80 p-3 rounded-xl border border-gray-100 hover:border-purple-500 hover:bg-purple-50/20 transition-all cursor-pointer group">
+                            <span class="text-[9px] font-black text-purple-600 uppercase tracking-wider flex items-center justify-between"><span class="flex items-center gap-1"><i class="fas fa-file-invoice-dollar"></i> Facturado</span> <i class="fas fa-chevron-right opacity-0 group-hover:opacity-100 text-[8px] transition-all"></i></span>
+                            <p id="monto-facturado" class="text-sm font-black text-gray-800 mt-1">$0.00</p>
+                        </div>
+                        <div onclick="abrirDesgloseEtapa('Pagado')" class="bg-slate-50/80 p-3 rounded-xl border border-gray-100 hover:border-amber-500 hover:bg-amber-50/20 transition-all cursor-pointer group">
+                            <span class="text-[9px] font-black text-amber-600 uppercase tracking-wider flex items-center justify-between"><span class="flex items-center gap-1"><i class="fas fa-hand-holding-usd"></i> Pagado</span> <i class="fas fa-chevron-right opacity-0 group-hover:opacity-100 text-[8px] transition-all"></i></span>
+                            <p id="monto-pagado" class="text-sm font-black text-gray-800 mt-1">$0.00</p>
+                        </div>
+                        <div onclick="abrirDesgloseEtapa('Faltante Meta')" class="bg-rose-50/40 p-3 rounded-xl border border-rose-100/60 hover:bg-rose-50 transition-all cursor-pointer group">
+                            <span class="text-[9px] font-black text-rose-600 uppercase tracking-wider flex items-center justify-between"><span class="flex items-center gap-1"><i class="fas fa-bullseye"></i> Faltante Meta</span> <i class="fas fa-chevron-right opacity-0 group-hover:opacity-100 text-[8px] transition-all"></i></span>
+                            <p id="monto-faltante" class="text-sm font-black text-rose-600 mt-1">$1,000,000.00</p>
+                        </div>
+                        <div onclick="abrirDesgloseEtapa('Perdido')" class="bg-slate-50/80 p-3 rounded-xl border border-gray-100 hover:border-rose-400 hover:bg-rose-50/20 transition-all cursor-pointer group">
+                            <span class="text-[9px] font-black text-gray-400 uppercase tracking-wider flex items-center justify-between"><span class="flex items-center gap-1"><i class="fas fa-times-circle"></i> Perdido</span> <i class="fas fa-chevron-right opacity-0 group-hover:opacity-100 text-[8px] transition-all"></i></span>
+                            <p id="monto-perdido" class="text-sm font-black text-gray-500 mt-1">$0.00</p>
+                        </div>
+                    </div>
+
+                    <!-- BARRA DE PROGRESO DINÁMICA MULTICOLOR -->
+                    <div class="w-full h-3 bg-slate-100 rounded-full flex overflow-hidden">
+                        <div id="bar-enviado" class="bg-blue-400 h-full w-[0%] transition-all duration-500"></div>
+                        <div id="bar-standby" class="bg-slate-400 h-full w-[0%] transition-all duration-500"></div>
+                        <div id="bar-ganadosinpo" class="bg-teal-400 h-full w-[0%] transition-all duration-500"></div>
+                        <div id="bar-ganado" class="bg-emerald-500 h-full w-[0%] transition-all duration-500"></div>
+                        <div id="bar-facturado" class="bg-purple-500 h-full w-[0%] transition-all duration-500"></div>
+                        <div id="bar-pagado" class="bg-amber-400 h-full w-[0%] transition-all duration-500"></div>
+                    </div>
+                </div>
+
+                <!-- 3. Filtros de Búsqueda Avanzados -->
+                <div class="flex flex-col md:flex-row gap-4 items-center justify-between bg-white p-4 rounded-2xl card-shadow border border-gray-100">
+                    <div class="relative w-full md:w-96">
+                        <i class="fas fa-search absolute left-4 top-3.5 text-gray-300"></i>
+                        <input type="text" id="buscador" placeholder="Buscar por No. Proyecto, cliente o solución..." class="w-full pl-12 pr-4 py-3 bg-gray-50 rounded-xl outline-none text-sm">
+                    </div>
+                    <div class="flex gap-2 w-full md:w-auto">
+                        <select id="filtro-area" class="flex-1 md:w-48 p-3 bg-purple-50 text-purple-700 rounded-xl text-sm outline-none font-bold border border-transparent cursor-pointer">
+                            <option value="Todos">Todas las Áreas</option>
+                            <option value="Redes">Área: Redes</option>
+                            <option value="Infraestructura">Área: Infraestructura</option>
+                        </select>
+                        <select id="filtro-estado" class="flex-1 md:w-48 p-3 bg-gray-50 rounded-xl text-sm outline-none text-gray-600 font-bold border border-transparent cursor-pointer">
+                            <option value="Todos">Todas las etapas</option>
+                            <option value="Enviado">Enviado</option>
+                            <option value="Stand by">Stand by</option>
+                            <option value="Ganado sin PO">Ganado sin PO</option>
+                            <option value="Ganado">Ganado</option>
+                            <option value="Facturado">Facturado</option>
+                            <option value="Pagado">Pagado</option>
+                            <option value="Perdido">Perdido</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- 4. Tabla Principal de Oportunidades -->
+                <div class="bg-white rounded-[2rem] card-shadow overflow-hidden border border-gray-100">
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left border-collapse">
+                            <thead class="bg-gray-50/50 text-gray-400 text-[10px] uppercase tracking-[0.2em] border-b border-gray-100">
+                                <tr>
+                                    <th class="p-5 align-middle">No. Proyecto / Cliente</th>
+                                    <th class="p-5 align-middle">Tarea y Solución</th>
+                                    <th class="p-5 align-middle text-center">Prioridad</th>
+                                    <th class="p-5 align-middle text-center">Progreso</th>
+                                    <th class="p-5 align-middle text-center">Fecha Límite</th>
+                                    <th class="p-5 align-middle text-center">Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody id="lista-proyectos" class="text-sm divide-y divide-gray-50"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <!-- MODAL FORMULARIO PROYECTO -->
     <div id="modal-proyecto" class="hidden fixed inset-0 bg-gray-900/60 backdrop-blur-sm flex items-center justify-center p-4 z-50">
         <div class="bg-white rounded-[2.5rem] w-full max-w-2xl p-8 shadow-2xl overflow-y-auto max-h-[90vh]">
             <div class="flex justify-between items-center mb-6">
-                <h2 id="modal-titulo" class="text-2xl font-black text-purple-900 flex items-center gap-3">
-                    <i class="fas fa-clipboard-list text-purple-500"></i> Nuevo Proyecto
-                </h2>
+                <h2 id="modal-titulo" class="text-2xl font-black text-purple-900"><i class="fas fa-clipboard-list text-purple-500 mr-2"></i> Oportunidad</h2>
                 <button onclick="cerrarModal()" class="text-gray-400 hover:text-gray-600"><i class="fas fa-times text-xl"></i></button>
             </div>
-            
-            <form id="form-proyecto" class="space-y-6">
+            <form id="form-proyecto" class="space-y-5">
                 <input type="hidden" id="edit-id">
                 
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div class="space-y-2">
-                        <label class="text-[10px] font-black text-gray-400 uppercase ml-2">Cliente / Empresa</label>
-                        <input type="text" id="cliente" placeholder="Ej: BBVA, Cemex, Telmex..." class="w-full p-4 bg-gray-50 rounded-2xl outline-none focus:ring-2 focus:ring-purple-500 transition" required>
+                <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+                    <div class="md:col-span-1">
+                        <label class="text-[10px] font-black text-gray-400 uppercase ml-1">Área Comercial</label>
+                        <select id="area" class="w-full p-3.5 bg-purple-50 text-purple-800 rounded-xl outline-none font-bold" required>
+                            <option value="Redes">Redes ($1M Meta)</option>
+                            <option value="Infraestructura">Infraestructura ($3M Meta)</option>
+                        </select>
                     </div>
-                    <div class="space-y-2">
-                        <label class="text-[10px] font-black text-gray-400 uppercase ml-2">Tarea / Acción</label>
-                        <input type="text" id="tarea" placeholder="¿Qué hay que hacer?" class="w-full p-4 bg-gray-50 rounded-2xl outline-none focus:ring-2 focus:ring-purple-500 transition" required>
+                    <div class="md:col-span-1">
+                        <label class="text-[10px] font-black text-gray-400 uppercase ml-1">No. Proyecto</label>
+                        <input type="text" id="inputNoProyecto" placeholder="Ej. S01210" class="w-full p-3.5 bg-gray-50 rounded-xl outline-none text-gray-700 font-medium" required>
+                    </div>
+                    <div class="md:col-span-1">
+                        <label class="text-[10px] font-black text-gray-400 uppercase ml-1">Cliente / Partner</label>
+                        <input type="text" id="inputCliente" placeholder="Ej. Go, Grab & Go" class="w-full p-3.5 bg-gray-50 rounded-xl outline-none text-gray-700 font-medium" required>
+                    </div>
+                    <div class="md:col-span-1">
+                        <label class="text-[10px] font-black text-gray-400 uppercase ml-1">Nombre de Oportunidad</label>
+                        <input type="text" id="inputNombreOportunidad" class="w-full p-3.5 bg-gray-50 rounded-xl outline-none text-gray-700 font-medium" required>
                     </div>
                 </div>
 
-                <div class="space-y-2">
-                    <label class="text-[10px] font-black text-gray-400 uppercase ml-2">Notas / Contexto (Antecedentes)</label>
-                    <textarea id="notas" placeholder="Stakeholders, links, antecedentes..." class="w-full p-4 bg-gray-50 rounded-2xl outline-none focus:ring-2 focus:ring-purple-500 h-24 transition"></textarea>
+                <div>
+                    <label class="text-[10px] font-black text-gray-400 uppercase ml-1">Notas / Descripción de Odoo</label>
+                    <textarea id="solucion" class="w-full p-3.5 bg-gray-50 rounded-xl outline-none h-20 text-gray-700 font-medium"></textarea>
                 </div>
 
-                <div class="space-y-2">
-                    <label class="text-[10px] font-black text-gray-400 uppercase ml-2">Solución Propuesta (Arquitectura/Productos)</label>
-                    <textarea id="solucion" placeholder="Productos o servicios a proponer..." class="w-full p-4 bg-gray-50 rounded-2xl outline-none focus:ring-2 focus:ring-purple-500 h-24 transition"></textarea>
-                </div>
-
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                    <div class="space-y-2">
-                        <label class="text-[10px] font-black text-gray-400 uppercase ml-2">Prioridad</label>
-                        <select id="prioridad" class="w-full p-4 bg-gray-50 rounded-2xl outline-none">
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div>
+                        <label class="text-[10px] font-black text-gray-400 uppercase ml-1">Prioridad</label>
+                        <select id="prioridad" class="w-full p-3.5 bg-gray-50 rounded-xl outline-none text-gray-700 font-medium">
                             <option value="Baja">Baja</option>
                             <option value="Media" selected>Media</option>
                             <option value="Alta">Alta</option>
                             <option value="Urgente">Urgente 🔥</option>
                         </select>
                     </div>
-                    <div class="space-y-2">
-                        <label class="text-[10px] font-black text-gray-400 uppercase ml-2">Estado</label>
-                        <select id="estado" class="w-full p-4 bg-gray-50 rounded-2xl outline-none text-purple-700 font-bold">
-                            <option value="Pendiente">Pendiente</option>
-                            <option value="En Proceso">En Proceso</option>
-                            <option value="Completado">Completado</option>
+                    <div>
+                        <label class="text-[10px] font-black text-gray-400 uppercase ml-1">Etapa de Odoo</label>
+                        <select id="estado" class="w-full p-3.5 bg-gray-50 rounded-xl outline-none font-bold text-purple-700">
+                            <option value="Enviado">Enviado</option>
+                            <option value="Stand by">Stand by</option>
+                            <option value="Ganado sin PO">Ganado sin PO</option>
+                            <option value="Ganado">Ganado</option>
+                            <option value="Facturado">Facturado</option>
+                            <option value="Pagado">Pagado</option>
+                            <option value="Perdido">Perdido</option>
                         </select>
                     </div>
-                    <div class="space-y-2">
-                        <label class="text-[10px] font-black text-gray-400 uppercase ml-2">Fecha Límite</label>
-                        <input type="date" id="fecha" class="w-full p-4 bg-gray-50 rounded-2xl outline-none">
+                    <div>
+                        <label class="text-[10px] font-black text-gray-400 uppercase ml-1">Ingreso Esperado (USD)</label>
+                        <input type="number" step="0.01" id="monto" class="w-full p-3.5 bg-gray-50 rounded-xl outline-none text-gray-700 font-medium" required>
                     </div>
                 </div>
 
-                <div class="space-y-4 pt-2">
-                    <div class="flex justify-between text-[10px] font-black text-gray-400 uppercase px-2">
-                        <span>Progreso del Proyecto</span>
-                        <span id="progreso-val">0%</span>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <label class="text-[10px] font-black text-gray-400 uppercase ml-1">Fecha Límite</label>
+                        <input type="date" id="fecha" class="w-full p-3.5 bg-gray-50 rounded-xl outline-none text-gray-700 font-medium">
                     </div>
-                    <input type="range" id="progreso" min="0" max="100" value="0" class="w-full h-2 bg-gray-100 rounded-lg appearance-none cursor-pointer accent-purple-600" oninput="document.getElementById('progreso-val').innerText = this.value + '%'">
+                    <div>
+                        <label class="text-[10px] font-black text-gray-400 uppercase ml-1">Progreso %</label>
+                        <input type="number" id="progreso" min="0" max="100" class="w-full p-3.5 bg-gray-50 rounded-xl outline-none text-gray-700 font-medium">
+                    </div>
                 </div>
-
-                <button type="submit" class="w-full py-5 er-gradient text-white font-black rounded-2xl shadow-xl hover:shadow-purple-200 transition-all transform hover:-translate-y-1">
-                    + GUARDAR PROYECTO
-                </button>
+                <button type="submit" class="w-full py-4 er-gradient text-white font-black rounded-xl shadow-xl transition-all tracking-wider">GUARDAR CAMBIOS</button>
             </form>
         </div>
     </div>
 
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-        import { getFirestore, collection, addDoc, onSnapshot, doc, updateDoc, deleteDoc, getDoc, serverTimestamp, query, orderBy } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+    <!-- SUB-VENTANA POPUP PARA EL DESGLOSE -->
+    <div id="modal-desglose" class="hidden fixed inset-0 bg-gray-900/60 backdrop-blur-sm flex items-center justify-center p-4 z-50">
+        <div class="bg-white rounded-[2rem] w-full max-w-xl p-6 shadow-2xl flex flex-col max-h-[80vh]">
+            <div class="flex justify-between items-center mb-4 border-b border-gray-100 pb-3">
+                <div>
+                    <h3 id="desglose-titulo-etapa" class="text-lg font-black text-purple-950 uppercase tracking-wide">Desglose Financiero</h3>
+                    <p id="desglose-periodo-texto" class="text-[11px] font-bold text-gray-400 uppercase tracking-wider mt-0.5"></p>
+                </div>
+                <button onclick="cerrarDesglose()" class="text-gray-400 hover:text-gray-600 p-1"><i class="fas fa-times text-lg"></i></button>
+            </div>
+            <div class="bg-purple-50/50 rounded-2xl p-4 mb-4 flex justify-between items-center border border-purple-100/50">
+                <span class="text-xs font-black uppercase text-purple-900 tracking-wider">Monto Total Acumulado:</span>
+                <span id="desglose-monto-total" class="text-xl font-black text-purple-700">$0.00</span>
+            </div>
+            <div class="flex-1 overflow-y-auto space-y-2 pr-1" id="desglose-lista-proyectos"></div>
+        </div>
+    </div>
 
-        const firebaseConfig = {
-            apiKey: "AIzaSyBxbPG2hi6Hxlro7-AvWHy3-H0qE1lThWQ",
-            authDomain: "pendientes-andree.firebaseapp.com",
-            projectId: "pendientes-andree",
-            storageBucket: "pendientes-andree.firebasestorage.app",
-            messagingSenderId: "21111410847",
-            appId: "1:21111410847:web:5996c7b0ecf99d394052aa"
+    <!-- LÓGICA SCRIPT COMPLETA CON GOOGLE APPS SCRIPT / GOOGLE SHEETS EDITABLE -->
+    <script>
+        /*
+            CONEXIÓN EDITABLE CON GOOGLE SHEETS MEDIANTE APPS SCRIPT
+
+            Tu Google Sheets debe tener estos encabezados:
+            No de Proyecto | Cliente | Oportunidad | Notas/Descripción de Odoo | Etapa | Ingreso esperado | Prioridad | Fecha Limite | Area | Porcentaje
+
+            Este HTML ahora:
+            - Lee datos desde Apps Script
+            - Crea registros en Google Sheets
+            - Edita registros en Google Sheets
+            - Borra registros en Google Sheets
+        */
+        const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxwXLiMEbHxEouEXuakc2deAAHzMtVV7NE5-ozsgq21Zzmn27W3Yqj2wdF1Hgfm34TL/exec";
+
+        let cacheProyectos = [];
+        let clienteSeleccionado = null;
+        let periodosInicializados = false;
+
+        const formatMoneda = (valor) => new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(valor || 0);
+        const NOMBRES_MESES = ["Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"];
+
+        const obtenerNoProyecto = (d) => d.no_proyecto || '';
+        const obtenerCliente = (d) => d.cliente || '';
+        const obtenerNombreOportunidad = (d) => d.nombre || d.tarea || '';
+
+        const limpiarTexto = (valor) => (valor || '').toString().trim();
+
+        const limpiarMonto = (valor) => {
+            if (valor === null || valor === undefined) return 0;
+            let texto = valor.toString().trim();
+            texto = texto.replace(/\$/g, '').replace(/,/g, '');
+            const numero = parseFloat(texto);
+            return isNaN(numero) ? 0 : numero;
         };
 
-        const app = initializeApp(firebaseConfig);
-        const db = getFirestore(app);
-        const colRef = collection(db, "proyectos");
+const normalizarEtapa = (valor) => {
+    const etapa = limpiarTexto(valor).toLowerCase();
+
+    if (etapa.includes('enviado')) return 'Enviado';
+    if (etapa.includes('standby') || etapa.includes('stand by')) return 'Stand by';
+    if (etapa.includes('facturado')) return 'Facturado';
+    if (etapa.includes('pagado')) return 'Pagado';
+    if (etapa.includes('perdido')) return 'Perdido';
+
+    if (
+        etapa.includes('ganado sin po') ||
+        etapa.includes('ganado oc pendiente') ||
+        etapa.includes('oc pendiente') ||
+        etapa.includes('sin po') ||
+        etapa.includes('pendiente')
+    ) {
+        return 'Ganado sin PO';
+    }
+
+    if (etapa.includes('ganado') || etapa.includes('ganadas')) return 'Ganado';
+
+    return limpiarTexto(valor) || 'Enviado';
+};
+        const normalizarPrioridad = (valor) => {
+            const prioridad = limpiarTexto(valor).toLowerCase();
+
+            if (prioridad.includes('muy alta') || prioridad.includes('urgente')) return 'Urgente';
+            if (prioridad.includes('alta')) return 'Alta';
+            if (prioridad.includes('media')) return 'Media';
+            if (prioridad.includes('baja')) return 'Baja';
+
+            return limpiarTexto(valor) || 'Media';
+        };
+
+        const normalizarArea = (valor) => {
+            const area = limpiarTexto(valor).toLowerCase();
+
+            if (area.includes('red')) return 'Redes';
+            if (area.includes('infra')) return 'Infraestructura';
+
+            return limpiarTexto(valor) || 'Infraestructura';
+        };
+
+        const normalizarFecha = (valor) => {
+            const texto = limpiarTexto(valor);
+            if (!texto) return '';
+
+            if (/^\d{4}-\d{2}-\d{2}$/.test(texto)) return texto;
+
+            const partes = texto.split(/[\/\-]/);
+            if (partes.length === 3) {
+                let [p1, p2, p3] = partes.map(p => p.trim());
+
+                if (p1.length === 4) {
+                    return `${p1}-${p2.padStart(2, '0')}-${p3.padStart(2, '0')}`;
+                }
+
+                if (p3.length === 4) {
+                    return `${p3}-${p2.padStart(2, '0')}-${p1.padStart(2, '0')}`;
+                }
+            }
+
+            return texto;
+        };
+
+        const obtenerValor = (fila, posiblesNombres) => {
+            for (const nombre of posiblesNombres) {
+                if (fila[nombre] !== undefined) return fila[nombre];
+            }
+
+            const keys = Object.keys(fila);
+            const normalizar = (txt) => txt.toLowerCase()
+                .normalize("NFD")
+                .replace(/[\u0300-\u036f]/g, "")
+                .replace(/\s+/g, " ")
+                .trim();
+
+            for (const nombre of posiblesNombres) {
+                const buscado = normalizar(nombre);
+                const keyEncontrada = keys.find(k => normalizar(k) === buscado);
+                if (keyEncontrada) return fila[keyEncontrada];
+            }
+
+            return '';
+        };
+
+        const convertirFilaApiAProyecto = (fila, index) => {
+            const noProyecto = obtenerValor(fila, ['No de Proyecto', 'No. Proyecto', 'No Proyecto', 'no_proyecto']);
+            const cliente = obtenerValor(fila, ['Cliente', 'Cliente / Partner', 'Partner']);
+            const oportunidad = obtenerValor(fila, ['Oportunidad', 'Nombre de Oportunidad', 'Tarea', 'nombre']);
+            const etapa = obtenerValor(fila, ['Etapa', 'Estado']);
+            const monto = obtenerValor(fila, ['Ingreso esperado', 'Ingreso Esperado', 'Monto', 'monto']);
+            const prioridad = obtenerValor(fila, ['Prioridad']);
+            const fecha = obtenerValor(fila, ['Fecha Limite', 'Fecha Límite', 'Fecha límite', 'Fecha Cierre', 'Fecha']);
+            const area = obtenerValor(fila, ['Area', 'Área']);
+            const descripcion = obtenerValor(fila, [
+                'Notas/Descripción de Odoo',
+                'Notas/Descripcion de Odoo',
+                'Notas / Descripción de Odoo',
+                'Notas / Descripcion de Odoo',
+                'Notas Descripción de Odoo',
+                'Notas Descripcion de Odoo',
+                'Notas',
+                'Descripción',
+                'Descripcion',
+                'Solución',
+                'Solucion',
+                'Notas / Solución Técnica',
+                'Notas / Solucion Tecnica'
+            ]);
+            const progreso = obtenerValor(fila, ['Progreso', 'Porcentaje', 'Avance']);
+            const rowIndex = fila.rowIndex || fila.RowIndex || fila.row_index || (index + 2);
+
+            return {
+                id: `sheet-${rowIndex}`,
+                rowIndex: Number(rowIndex),
+                d: {
+                    no_proyecto: limpiarTexto(noProyecto),
+                    cliente: limpiarTexto(cliente),
+                    nombre: limpiarTexto(oportunidad),
+                    tarea: limpiarTexto(oportunidad),
+                    solucion: limpiarTexto(descripcion),
+                    estado: normalizarEtapa(etapa),
+                    monto: limpiarMonto(monto),
+                    prioridad: normalizarPrioridad(prioridad),
+                    fecha: normalizarFecha(fecha),
+                    area: normalizarArea(area),
+                    progreso: limpiarProgreso(progreso)
+                }
+            };
+        };
+
+        const crearPayloadDesdeFormulario = () => ({
+            no_proyecto: document.getElementById('inputNoProyecto').value.trim(),
+            cliente: document.getElementById('inputCliente').value.trim(),
+            oportunidad: document.getElementById('inputNombreOportunidad').value.trim(),
+            descripcion: document.getElementById('solucion').value.trim(),
+            etapa: document.getElementById('estado').value,
+            ingreso_esperado: parseFloat(document.getElementById('monto').value) || 0,
+            prioridad: document.getElementById('prioridad').value,
+            fecha_limite: document.getElementById('fecha').value,
+            area: document.getElementById('area').value,
+            porcentaje: parseInt(document.getElementById('progreso').value) || 0
+        });
+
+        const apiGet = async () => {
+            const respuesta = await fetch(`${APPS_SCRIPT_URL}?action=read&nocache=${Date.now()}`);
+            if (!respuesta.ok) throw new Error('No se pudo leer Apps Script');
+            return await respuesta.json();
+        };
+
+        const apiPost = async (payload) => {
+            const respuesta = await fetch(APPS_SCRIPT_URL, {
+                method: 'POST',
+                body: JSON.stringify(payload),
+                redirect: 'follow'
+            });
+
+            if (!respuesta.ok) throw new Error('No se pudo escribir en Google Sheets');
+            return await respuesta.json();
+        };
+
+        const cargarDatosDesdeGoogleSheets = async () => {
+            if (!APPS_SCRIPT_URL || APPS_SCRIPT_URL.includes('PEGA_AQUI')) {
+                console.warn('Falta configurar la URL de Apps Script.');
+                cacheProyectos = [];
+                actualizarSelectorPeriodos(cacheProyectos);
+                window.forzarRecalculoFinanciero();
+                return;
+            }
+
+            try {
+                const resultado = await apiGet();
+                if (!resultado.success) throw new Error(resultado.message || 'Respuesta inválida de Apps Script');
+
+                cacheProyectos = (resultado.data || [])
+                    .map(convertirFilaApiAProyecto)
+                    .filter(p => p.d.no_proyecto || p.d.cliente || p.d.nombre);
+
+                actualizarSelectorPeriodos(cacheProyectos);
+                window.forzarRecalculoFinanciero();
+            } catch (error) {
+                console.error('Error cargando datos desde Apps Script:', error);
+                alert('No se pudieron cargar los datos desde Google Sheets. Revisa la URL de Apps Script y permisos de implementación.');
+            }
+        };
+
+        const obtenerMetaGlobalActual = () => {
+            const areaFiltro = document.getElementById('filtro-area').value;
+            if (areaFiltro === 'Redes') return 1000000;
+            if (areaFiltro === 'Infraestructura') return 3000000;
+            return 4000000;
+        };
+
+        const actualizarSelectorPeriodos = (proyectos) => {
+            const selector = document.getElementById('filtro-periodo');
+            const valorSeleccionadoPrevio = selector.value || 'Todos';
+            const periodosExistentes = new Set();
+
+            proyectos.forEach(({ d }) => {
+                if (d.fecha && d.fecha.includes('-')) {
+                    const [ano, mes] = d.fecha.split('-');
+                    if (ano && mes) periodosExistentes.add(`${ano}-${mes}`);
+                }
+            });
+
+            const listaOrdenada = Array.from(periodosExistentes).sort().reverse();
+            let opcionesHTML = `<option value="Todos">Todos los Periodos</option>`;
+
+            listaOrdenada.forEach(periodo => {
+                const [ano, mes] = periodo.split('-');
+                opcionesHTML += `<option value="${periodo}">${NOMBRES_MESES[parseInt(mes, 10) - 1]} ${ano}</option>`;
+            });
+
+            selector.innerHTML = opcionesHTML;
+
+            if (!periodosInicializados) {
+                const hoy = new Date();
+                const mesActualFmt = `${hoy.getFullYear()}-${String(hoy.getMonth() + 1).padStart(2, '0')}`;
+                selector.value = periodosExistentes.has(mesActualFmt) ? mesActualFmt : 'Todos';
+                periodosInicializados = true;
+            } else {
+                selector.value = Array.from(selector.options).some(opt => opt.value === valorSeleccionadoPrevio) ? valorSeleccionadoPrevio : 'Todos';
+            }
+        };
 
         window.abrirModal = () => {
             document.getElementById('form-proyecto').reset();
             document.getElementById('edit-id').value = '';
-            document.getElementById('progreso-val').innerText = '0%';
-            document.getElementById('modal-titulo').innerHTML = '<i class="fas fa-clipboard-list text-purple-500"></i> Nuevo Proyecto';
+            document.getElementById('modal-titulo').innerText = 'Nueva Oportunidad';
+            document.getElementById('area').value = 'Redes';
+            document.getElementById('estado').value = 'Enviado';
             document.getElementById('modal-proyecto').classList.remove('hidden');
         };
+
         window.cerrarModal = () => document.getElementById('modal-proyecto').classList.add('hidden');
+        window.cerrarDesglose = () => document.getElementById('modal-desglose').classList.add('hidden');
+
+        window.abrirDesgloseEtapa = (etapa) => {
+            const periodo = document.getElementById('filtro-periodo').value;
+            const areaFiltro = document.getElementById('filtro-area').value;
+            document.getElementById('desglose-titulo-etapa').innerText = `Desglose: ${etapa}`;
+            document.getElementById('desglose-periodo-texto').innerText = `Área: ${areaFiltro} | Filtro: ${periodo}`;
+
+            const contenedorLista = document.getElementById('desglose-lista-proyectos');
+            contenedorLista.innerHTML = '';
+            let totalAcumulado = 0;
+
+            cacheProyectos.forEach(({ d }) => {
+                const est = d.estado || 'Enviado';
+                const areaProyecto = d.area || 'Redes';
+                const fechaLimite = d.fecha || '';
+
+                if (periodo !== 'Todos' && !fechaLimite.startsWith(periodo)) return;
+                if (areaFiltro !== 'Todos' && areaProyecto !== areaFiltro) return;
+
+                if (etapa !== 'Faltante Meta' && est === etapa) {
+                    totalAcumulado += (parseFloat(d.monto) || 0);
+                    contenedorLista.innerHTML += `
+                        <div class="p-3 bg-slate-50 rounded-xl border border-gray-100 flex justify-between items-center hover:bg-gray-100/50 transition-all">
+                            <div>
+                                <h4 class="font-bold text-gray-800 text-xs">${obtenerNoProyecto(d) || '--'} · ${obtenerCliente(d) || 'Sin cliente'} <span class="text-[9px] bg-purple-100 text-purple-700 px-1 rounded font-normal">${areaProyecto}</span></h4>
+                                <p class="text-[11px] text-gray-400 font-medium truncate max-w-[280px]">${obtenerNombreOportunidad(d)}</p>
+                            </div>
+                            <div class="text-right">
+                                <span class="text-xs font-black text-purple-900">${formatMoneda(d.monto || 0)}</span>
+                                <p class="text-[9px] text-gray-400 font-mono font-bold">${d.fecha || '--'}</p>
+                            </div>
+                        </div>`;
+                }
+            });
+
+            if (etapa === 'Faltante Meta') {
+                let sumaPositivos = 0;
+                cacheProyectos.forEach(({ d }) => {
+                    const est = d.estado || 'Enviado';
+                    const areaProyecto = d.area || 'Redes';
+                    const fechaLimite = d.fecha || '';
+                    if ((periodo === 'Todos' || fechaLimite.startsWith(periodo)) && (areaFiltro === 'Todos' || areaProyecto === areaFiltro) && ['Ganado', 'Ganado sin PO', 'Facturado', 'Pagado'].includes(est)) {
+                        sumaPositivos += (parseFloat(d.monto) || 0);
+                    }
+                });
+                const metaDinamica = obtenerMetaGlobalActual();
+                totalAcumulado = Math.max(0, metaDinamica - sumaPositivos);
+                contenedorLista.innerHTML = `
+                    <div class="p-4 text-center text-xs font-medium text-gray-500">
+                        <i class="fas fa-info-circle text-purple-500 mb-2 text-base block"></i>
+                        Meta de este segmento: <span class="font-bold text-purple-900">${formatMoneda(metaDinamica)} USD</span>.
+                    </div>`;
+            }
+
+            if(contenedorLista.children.length === 0 && etapa !== 'Faltante Meta') {
+                contenedorLista.innerHTML = `<p class="text-center py-6 text-xs font-bold text-gray-400 uppercase tracking-wider">No hay oportunidades</p>`;
+            }
+
+            document.getElementById('desglose-monto-total').innerText = formatMoneda(totalAcumulado);
+            document.getElementById('modal-desglose').classList.remove('hidden');
+        };
 
         document.getElementById('form-proyecto').addEventListener('submit', async (e) => {
             e.preventDefault();
-            const id = document.getElementById('edit-id').value;
-            const data = {
-                cliente: document.getElementById('cliente').value,
-                tarea: document.getElementById('tarea').value,
-                notas: document.getElementById('notas').value,
-                solucion: document.getElementById('solucion').value,
-                prioridad: document.getElementById('prioridad').value,
-                estado: document.getElementById('estado').value,
-                fecha: document.getElementById('fecha').value,
-                progreso: document.getElementById('progreso').value,
-                updatedAt: serverTimestamp()
-            };
 
-            if(id) {
-                await updateDoc(doc(db, "proyectos", id), data);
-            } else {
-                data.createdAt = serverTimestamp();
-                await addDoc(colRef, data);
+            const id = document.getElementById('edit-id').value;
+            const btnGuardar = e.target.querySelector('button[type="submit"]');
+            const textoOriginal = btnGuardar.innerText;
+            const data = crearPayloadDesdeFormulario();
+
+            try {
+                btnGuardar.disabled = true;
+                btnGuardar.innerText = 'GUARDANDO...';
+
+                if (id) {
+                    const proyecto = cacheProyectos.find(p => p.id === id);
+                    if (!proyecto || !proyecto.rowIndex) throw new Error('No se encontró la fila a actualizar');
+
+                    const resultado = await apiPost({
+                        action: 'update',
+                        rowIndex: proyecto.rowIndex,
+                        data
+                    });
+
+                    if (!resultado.success) throw new Error(resultado.message || 'No se pudo actualizar');
+                } else {
+                    const resultado = await apiPost({
+                        action: 'create',
+                        data
+                    });
+
+                    if (!resultado.success) throw new Error(resultado.message || 'No se pudo crear');
+                }
+
+                cerrarModal();
+                await cargarDatosDesdeGoogleSheets();
+            } catch (error) {
+                console.error('Error guardando:', error);
+                alert('No se pudo guardar en Google Sheets. Revisa la consola o la implementación de Apps Script.');
+            } finally {
+                btnGuardar.disabled = false;
+                btnGuardar.innerText = textoOriginal;
             }
-            cerrarModal();
         });
 
-        window.editar = async (id) => {
-            const snap = await getDoc(doc(db, "proyectos", id));
-            const d = snap.data();
+        window.editar = (id) => {
+            const proyecto = cacheProyectos.find(p => p.id === id);
+            if (!proyecto) return;
+
+            const d = proyecto.d;
             document.getElementById('edit-id').value = id;
-            document.getElementById('cliente').value = d.cliente;
-            document.getElementById('tarea').value = d.tarea;
-            document.getElementById('notas').value = d.notas || '';
+            document.getElementById('area').value = d.area || 'Redes';
+            document.getElementById('inputNoProyecto').value = d.no_proyecto || '';
+            document.getElementById('inputCliente').value = d.cliente || '';
+            document.getElementById('inputNombreOportunidad').value = d.nombre || d.tarea || '';
             document.getElementById('solucion').value = d.solucion || '';
-            document.getElementById('prioridad').value = d.prioridad;
-            document.getElementById('estado').value = d.estado;
-            document.getElementById('fecha').value = d.fecha;
+            document.getElementById('prioridad').value = d.prioridad || 'Media';
+            document.getElementById('estado').value = d.estado || 'Enviado';
+            document.getElementById('monto').value = d.monto || 0;
+            document.getElementById('fecha').value = d.fecha || '';
             document.getElementById('progreso').value = d.progreso || 0;
-            document.getElementById('progreso-val').innerText = (d.progreso || 0) + '%';
-            document.getElementById('modal-titulo').innerHTML = '<i class="fas fa-edit text-blue-500"></i> Editar Proyecto';
+            document.getElementById('modal-titulo').innerText = 'Editar Registro';
             document.getElementById('modal-proyecto').classList.remove('hidden');
         };
 
-        window.completarRapido = (id) => updateDoc(doc(db, "proyectos", id), { estado: 'Completado', progreso: 100 });
-        window.borrar = (id) => confirm("¿Eliminar este registro?") && deleteDoc(doc(db, "proyectos", id));
+        window.borrar = async (id) => {
+            const proyecto = cacheProyectos.find(p => p.id === id);
+            if (!proyecto || !proyecto.rowIndex) return alert('No se encontró la fila a eliminar.');
+            if (!confirm("¿Eliminar este registro de Google Sheets?")) return;
 
-        const q = query(colRef, orderBy("createdAt", "desc"));
-        onSnapshot(q, (snapshot) => {
+            try {
+                const resultado = await apiPost({
+                    action: 'delete',
+                    rowIndex: proyecto.rowIndex
+                });
+
+                if (!resultado.success) throw new Error(resultado.message || 'No se pudo eliminar');
+
+                await cargarDatosDesdeGoogleSheets();
+            } catch (error) {
+                console.error('Error eliminando:', error);
+                alert('No se pudo eliminar el registro en Google Sheets.');
+            }
+        };
+
+        window.filtrarPorCliente = (cliente) => {
+            clienteSeleccionado = cliente;
+            document.getElementById('titulo-vista').innerText = cliente ? `Oportunidades: ${cliente}` : "Todos los pendientes";
+            aplicarFiltrosYRenderizar();
+        };
+
+        const aplicarFiltrosYRenderizar = () => {
+            const queryBusqueda = document.getElementById('buscador').value.toLowerCase().trim();
+            const filterState = document.getElementById('filtro-estado').value;
+            const areaFiltro = document.getElementById('filtro-area').value;
             const list = document.getElementById('lista-proyectos');
             list.innerHTML = '';
-            let t=0, p=0, u=0, c=0;
 
-            snapshot.forEach(docSnap => {
-                const d = docSnap.data();
-                const id = docSnap.id;
-                t++;
-                if(d.estado !== 'Completado') p++;
-                if(d.prioridad === 'Urgente' || d.prioridad === 'Alta') u++;
-                if(d.estado === 'Completado') c++;
+            cacheProyectos.forEach(proyecto => {
+                const { id, d } = proyecto;
+                const estReal = d.estado || 'Enviado';
+                const areaProyecto = d.area || 'Redes';
 
-                const prioColor = {
-                    'Urgente': 'bg-rose-100 text-rose-600',
-                    'Alta': 'bg-orange-100 text-orange-600',
-                    'Media': 'bg-indigo-100 text-indigo-600',
-                    'Baja': 'bg-slate-100 text-slate-500'
-                }[d.prioridad];
+                const cumpleCliente = !clienteSeleccionado || d.cliente === clienteSeleccionado;
+                const textoBusqueda = `${obtenerNoProyecto(d)} ${obtenerCliente(d)} ${obtenerNombreOportunidad(d)} ${d.solucion || ''}`.toLowerCase();
+                const cumpleBusqueda = textoBusqueda.includes(queryBusqueda);
+                const cumpleEstado = (filterState === 'Todos') || (estReal === filterState);
+                const cumpleArea = (areaFiltro === 'Todos') || (areaProyecto === areaFiltro);
 
-                list.innerHTML += `
-                    <tr class="group hover:bg-purple-50/30 transition-all">
-                        <td class="p-6">
-                            <p class="font-black text-purple-900 text-base mb-1">${d.cliente}</p>
-                            <p class="text-[10px] text-gray-400 font-bold uppercase tracking-wider">Folio: ${id.substring(0,6)}</p>
-                        </td>
-                        <td class="p-6 max-w-md">
-                            <p class="font-bold text-gray-700 mb-1">${d.tarea}</p>
-                            <p class="text-xs text-gray-400 line-clamp-1 italic">${d.solucion || 'Sin solución definida'}</p>
-                        </td>
-                        <td class="p-6 text-center">
-                            <span class="px-3 py-1.5 rounded-xl text-[10px] font-black uppercase ${prioColor}">${d.prioridad}</span>
-                        </td>
-                        <td class="p-6 w-48">
-                            <div class="flex items-center gap-3">
-                                <div class="flex-1 h-2 bg-gray-100 rounded-full overflow-hidden">
-                                    <div class="h-full bg-purple-500 transition-all" style="width: ${d.progreso}%"></div>
+                if (cumpleCliente && cumpleBusqueda && cumpleEstado && cumpleArea) {
+                    const prioColor = {
+                        'Urgente': 'bg-rose-100 text-rose-600',
+                        'Alta': 'bg-orange-100 text-orange-600',
+                        'Media': 'bg-indigo-100 text-indigo-600',
+                        'Baja': 'bg-slate-100 text-slate-500'
+                    }[d.prioridad] || 'bg-gray-100 text-gray-600';
+
+                    list.innerHTML += `
+                        <tr class="hover:bg-purple-50/40 transition-all border-b border-gray-50">
+                            <td class="p-4 align-middle">
+                                <p class="font-black text-purple-900 text-sm leading-tight">${obtenerNoProyecto(d) || '--'}</p>
+                                <p class="text-[11px] font-bold text-gray-500 mt-0.5">${obtenerCliente(d) || 'Sin cliente'}</p>
+                                <span class="text-[9px] font-bold px-1.5 py-0.5 bg-purple-100 text-purple-700 rounded uppercase tracking-wide mt-1 inline-block">${areaProyecto}</span>
+                            </td>
+                            <td class="p-4 align-middle max-w-xs">
+                                <p class="font-bold text-gray-700 leading-tight">${obtenerNombreOportunidad(d)}</p>
+                                <p class="text-[11px] text-gray-400 truncate mt-0.5">${d.solucion || 'Sin descripción'} · <span class="font-semibold text-purple-700">${formatMoneda(d.monto || 0)}</span></p>
+                            </td>
+                            <td class="p-4 align-middle text-center">
+                                <span class="px-2.5 py-1 rounded-lg text-[9px] font-black uppercase ${prioColor}">${d.prioridad}</span>
+                            </td>
+                            <td class="p-4 align-middle text-center">
+                                <div class="flex items-center justify-center gap-2">
+                                    <div class="w-12 bg-gray-100 rounded-full h-1.5 hidden sm:block">
+                                        <div class="bg-purple-500 h-1.5 rounded-full" style="width: ${d.progreso || 0}%"></div>
+                                    </div>
+                                    <span class="text-xs font-mono font-bold text-gray-500">${d.progreso || 0}%</span>
                                 </div>
-                                <span class="text-[10px] font-black text-gray-400">${d.progreso}%</span>
-                            </div>
-                        </td>
-                        <td class="p-6 font-mono text-gray-400 font-bold">${d.fecha || '--'}</td>
-                        <td class="p-6 text-right space-x-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                            <button onclick="completarRapido('${id}')" class="p-2 text-emerald-500 hover:bg-emerald-50 rounded-lg"><i class="fas fa-check-circle"></i></button>
-                            <button onclick="editar('${id}')" class="p-2 text-blue-500 hover:bg-blue-50 rounded-lg"><i class="fas fa-edit"></i></button>
-                            <button onclick="borrar('${id}')" class="p-2 text-rose-300 hover:text-rose-500 rounded-lg"><i class="fas fa-trash"></i></button>
-                        </td>
-                    </tr>`;
+                            </td>
+                            <td class="p-4 align-middle font-mono text-xs text-gray-400 font-bold text-center">${d.fecha || '--'}</td>
+                            <td class="p-4 align-middle text-center">
+                                <div class="flex items-center justify-center gap-1">
+                                    <button onclick="editar('${id}')" class="p-2 text-indigo-600 hover:bg-indigo-50 rounded-xl transition bg-white border border-gray-100"><i class="fas fa-edit text-xs"></i></button>
+                                    <button onclick="borrar('${id}')" class="p-2 text-rose-500 hover:bg-rose-50 rounded-xl transition bg-white border border-gray-100"><i class="fas fa-trash text-xs"></i></button>
+                                </div>
+                            </td>
+                        </tr>`;
+                }
             });
-            document.getElementById('count-total').innerText = t;
-            document.getElementById('count-proceso').innerText = p;
-            document.getElementById('count-urgente').innerText = u;
-            document.getElementById('count-completado').innerText = c;
-        });
+        };
+
+        document.getElementById('buscador').addEventListener('input', aplicarFiltrosYRenderizar);
+        document.getElementById('filtro-estado').addEventListener('change', aplicarFiltrosYRenderizar);
+        document.getElementById('filtro-area').addEventListener('change', () => window.forzarRecalculoFinanciero());
+        document.getElementById('filtro-periodo').addEventListener('change', () => window.forzarRecalculoFinanciero());
+
+        window.forzarRecalculoFinanciero = () => {
+            let cuentasMapeadas = {};
+            let alta=0, media=0, baja=0, comp=0, perd=0;
+            let dolEnviado=0, dolStandby=0, dolGanadoSinPo=0, dolGanado=0, dolFacturado=0, dolPagado=0, dolPerdido=0;
+
+            const periodoSeleccionado = document.getElementById('filtro-periodo').value;
+            const areaFiltro = document.getElementById('filtro-area').value;
+
+            cacheProyectos.forEach(proyecto => {
+                const d = proyecto.d;
+                const monto = parseFloat(d.monto) || 0;
+                const est = d.estado || 'Enviado';
+                const areaProyecto = d.area || 'Redes';
+                const fechaLimite = d.fecha || '';
+
+                if (areaFiltro !== 'Todos' && areaProyecto !== areaFiltro) return;
+
+                if(d.cliente) cuentasMapeadas[d.cliente] = (cuentasMapeadas[d.cliente] || 0) + 1;
+
+                if (d.prioridad === 'Urgente' || d.prioridad === 'Alta') alta++;
+                if (d.prioridad === 'Media') media++;
+                if (d.prioridad === 'Baja') baja++;
+
+                if (periodoSeleccionado !== 'Todos' && !fechaLimite.startsWith(periodoSeleccionado)) return;
+
+                if (est === 'Enviado') dolEnviado += monto;
+                else if (est === 'Stand by') dolStandby += monto;
+                else if (est === 'Ganado sin PO') dolGanadoSinPo += monto;
+                else if (est === 'Ganado') dolGanado += monto;
+                else if (est === 'Facturado') dolFacturado += monto;
+                else if (est === 'Pagado') dolPagado += monto;
+                else if (est === 'Perdido') dolPerdido += monto;
+
+                if (['Ganado', 'Ganado sin PO', 'Facturado', 'Pagado'].includes(est)) comp++;
+                if (est === 'Perdido') perd++;
+            });
+
+            document.getElementById('count-urgente').innerText = alta;
+            document.getElementById('count-proceso').innerText = media;
+            document.getElementById('count-total').innerText = baja;
+            document.getElementById('count-completado').innerText = comp;
+            document.getElementById('count-perdido').innerText = perd;
+
+            const metaDinamica = obtenerMetaGlobalActual();
+            document.getElementById('label-meta-dinamica').innerText = `CIERRE COMERCIAL EFECTIVO (META: ${formatMoneda(metaDinamica)} USD)`;
+
+            const exitoComercialEfectivo = dolGanado + dolGanadoSinPo + dolFacturado + dolPagado;
+            const dolFaltante = Math.max(0, metaDinamica - exitoComercialEfectivo);
+            const pctGanado = metaDinamica > 0 ? Math.min(100, (exitoComercialEfectivo / metaDinamica) * 100) : 0;
+
+            document.getElementById('meta-ganado-main').innerText = formatMoneda(exitoComercialEfectivo);
+            document.getElementById('meta-porcentaje').innerText = `${pctGanado.toFixed(2)}%`;
+
+            document.getElementById('monto-enviado').innerText = formatMoneda(dolEnviado);
+            document.getElementById('monto-standby').innerText = formatMoneda(dolStandby);
+            document.getElementById('monto-ganado-sin-po').innerText = formatMoneda(dolGanadoSinPo);
+            document.getElementById('monto-ganado').innerText = formatMoneda(dolGanado);
+            document.getElementById('monto-facturado').innerText = formatMoneda(dolFacturado);
+            document.getElementById('monto-pagado').innerText = formatMoneda(dolPagado);
+            document.getElementById('monto-faltante').innerText = formatMoneda(dolFaltante);
+            document.getElementById('monto-perdido').innerText = formatMoneda(dolPerdido);
+
+            const sidebarDiv = document.getElementById('lista-cuentas-sidebar');
+            sidebarDiv.innerHTML = `
+                <button onclick="filtrarPorCliente(null)" class="w-full flex items-center justify-between px-3 py-2 rounded-xl text-left text-xs font-bold ${!clienteSeleccionado ? 'bg-purple-50 text-purple-700' : 'text-gray-600 hover:bg-gray-50'} transition">
+                    <span class="flex items-center gap-2"><span class="w-2 h-2 rounded-full bg-purple-600"></span>Ver Todas</span>
+                </button>`;
+
+            Object.keys(cuentasMapeadas).sort().forEach(cl => {
+                const esActivo = clienteSeleccionado === cl;
+                const clienteSeguro = cl.replace(/'/g, "\\'");
+                sidebarDiv.innerHTML += `
+                    <button onclick="filtrarPorCliente('${clienteSeguro}')" class="w-full flex items-center justify-between px-3 py-2 rounded-xl text-left text-xs ${esActivo ? 'bg-purple-100 font-bold text-purple-800' : 'font-medium text-gray-600 hover:bg-gray-50'} transition">
+                        <span class="truncate flex items-center gap-2"><span class="w-1.5 h-1.5 rounded-full bg-gray-400"></span>${cl}</span>
+                    </button>`;
+            });
+
+            const montoPipelineTotal = dolEnviado + dolStandby + dolGanadoSinPo + dolGanado + dolFacturado + dolPagado;
+            if (montoPipelineTotal > 0) {
+                document.getElementById('bar-enviado').style.width = `${(dolEnviado / montoPipelineTotal) * 100}%`;
+                document.getElementById('bar-standby').style.width = `${(dolStandby / montoPipelineTotal) * 100}%`;
+                document.getElementById('bar-ganadosinpo').style.width = `${(dolGanadoSinPo / montoPipelineTotal) * 100}%`;
+                document.getElementById('bar-ganado').style.width = `${(dolGanado / montoPipelineTotal) * 100}%`;
+                document.getElementById('bar-facturado').style.width = `${(dolFacturado / montoPipelineTotal) * 100}%`;
+                document.getElementById('bar-pagado').style.width = `${(dolPagado / montoPipelineTotal) * 100}%`;
+            } else {
+                ['bar-enviado', 'bar-standby', 'bar-ganadosinpo', 'bar-ganado', 'bar-facturado', 'bar-pagado'].forEach(id => document.getElementById(id).style.width = '0%');
+            }
+
+            aplicarFiltrosYRenderizar();
+        };
 
         window.exportarExcel = () => {
-            const table = document.querySelector("table");
-            const wb = XLSX.utils.table_to_book(table);
-            XLSX.writeFile(wb, "Reporte_Preventa_ERCONNECT_Andree.xlsx");
+            const areaFiltro = document.getElementById('filtro-area').value;
+            const estadoFiltro = document.getElementById('filtro-estado').value;
+            const periodoFiltro = document.getElementById('filtro-periodo').value;
+
+            const datos = [];
+
+            cacheProyectos.forEach(({ d }) => {
+                const estReal = d.estado || 'Enviado';
+                const areaProyecto = d.area || 'Redes';
+                const fechaLimite = d.fecha || '';
+
+                if (areaFiltro !== 'Todos' && areaProyecto !== areaFiltro) return;
+                if (estadoFiltro !== 'Todos' && estReal !== estadoFiltro) return;
+                if (periodoFiltro !== 'Todos' && !fechaLimite.startsWith(periodoFiltro)) return;
+
+                datos.push({
+                    "No. Proyecto": obtenerNoProyecto(d),
+                    "Cliente": obtenerCliente(d),
+                    "Área": areaProyecto,
+                    "Oportunidad": obtenerNombreOportunidad(d),
+                    "Notas / Solución Técnica": d.solucion || '',
+                    "Prioridad": d.prioridad || 'Media',
+                    "Etapa": estReal,
+                    "Monto": parseFloat(d.monto) || 0,
+                    "Progreso": `${parseInt(d.progreso) || 0}%`,
+                    "Fecha Límite": d.fecha || ''
+                });
+            });
+
+            const ws = XLSX.utils.json_to_sheet(datos);
+            const wb = XLSX.utils.book_new();
+
+            const rango = XLSX.utils.decode_range(ws['!ref'] || "A1:A1");
+            for (let R = 1; R <= rango.e.r; ++R) {
+                const celdaMonto = ws[XLSX.utils.encode_cell({r: R, c: 7})];
+                if (celdaMonto) celdaMonto.z = '"$"#,##0.00';
+            }
+
+            ws['!cols'] = [
+                { wch: 18 }, { wch: 28 }, { wch: 18 }, { wch: 35 }, { wch: 45 },
+                { wch: 14 }, { wch: 18 }, { wch: 15 }, { wch: 12 }, { wch: 16 }
+            ];
+
+            XLSX.utils.book_append_sheet(wb, ws, "Pipeline");
+            XLSX.writeFile(wb, "Reporte_Pipeline_Estructurado.xlsx");
         };
+
+        document.addEventListener('DOMContentLoaded', cargarDatosDesdeGoogleSheets);
     </script>
+
 </body>
 </html>
