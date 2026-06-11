@@ -15,10 +15,10 @@
 <body class="bg-[#f8fafc] font-sans antialiased">
 
     <!-- CONTENEDOR GENERAL -->
-    <div class="flex h-screen overflow-hidden w-full">
+    <div class="flex min-h-screen w-full overflow-x-hidden">
 
         <!-- SIDEBAR IZQUIERDO -->
-        <aside class="w-72 bg-white border-r border-gray-100 flex flex-col h-full shrink-0 shadow-sm z-50">
+        <aside id="sidebar" class="fixed md:relative inset-y-0 left-0 w-72 bg-white border-r border-gray-100 flex flex-col h-full min-h-screen shrink-0 shadow-sm z-50 transform -translate-x-full md:translate-x-0 transition-transform duration-300">
             <div class="p-5 border-b border-gray-50 flex items-center gap-3">
                 <div class="bg-gradient-to-tr from-purple-600 to-indigo-500 text-white p-2.5 rounded-xl shadow-md shadow-indigo-100">
                     <i class="fas fa-bolt text-lg"></i>
@@ -35,20 +35,27 @@
             </div>
         </aside>
 
+        <div id="sidebar-overlay" class="hidden fixed inset-0 bg-gray-900/40 backdrop-blur-[1px] z-40 md:hidden"></div>
+
         <!-- CONTENEDOR DERECHO -->
-        <div class="flex-1 flex flex-col h-full overflow-y-auto">
+        <div class="flex-1 flex flex-col min-h-screen overflow-y-auto w-full md:w-[calc(100%-18rem)]">
 
             <!-- HEADER SUPERIOR -->
-            <header class="er-gradient text-white p-5 shadow-md flex justify-between items-center sticky top-0 z-40">
-                <div>
+            <header class="er-gradient text-white p-4 md:p-5 shadow-md flex flex-col sm:flex-row gap-4 sm:gap-0 sm:justify-between sm:items-center sticky top-0 z-30">
+                <div class="flex items-center w-full sm:w-auto">
+                    <button id="mobileMenuBtn" class="md:hidden mr-3 bg-white/15 hover:bg-white/25 text-white w-10 h-10 rounded-xl flex items-center justify-center transition">
+                        <i class="fas fa-bars"></i>
+                    </button>
+                    <div>
                     <h2 class="text-lg font-black tracking-tight" id="titulo-vista">Todos los pendientes</h2>
                     <p class="text-[11px] text-purple-200 font-medium uppercase tracking-wider">Martes, 2 de Junio de 2026</p>
+                    </div>
                 </div>
                 
-                <div class="flex items-center gap-6">
+                <div class="flex items-center gap-3 sm:gap-6 w-full sm:w-auto overflow-x-auto pb-1 sm:pb-0">
                     <div class="text-right hidden sm:block">
                     </div>
-                    <div class="flex gap-2.5">
+                    <div class="flex gap-2.5 min-w-max">
                         <button onclick="exportarExcel()" class="bg-emerald-500 hover:bg-emerald-600 text-white px-4 py-2 rounded-xl text-xs font-bold transition flex items-center gap-2 shadow-sm">
                             <i class="fas fa-file-excel"></i> EXCEL
                         </button>
@@ -63,10 +70,10 @@
             </header>
 
             <!-- MAIN CONTENT -->
-            <main class="p-6 space-y-6 max-w-[1600px] w-full mx-auto">
+            <main class="p-4 md:p-6 space-y-6 max-w-[1600px] w-full mx-auto">
 
                 <!-- 1. Bloque de Métricas de Control -->
-                <div class="grid grid-cols-2 md:grid-cols-5 gap-4">
+                <div class="grid grid-cols-2 lg:grid-cols-5 gap-3 md:gap-4">
                     <div class="bg-white p-4 rounded-2xl card-shadow border-b-4 border-rose-500 flex flex-col justify-between">
                         <span class="text-gray-400 text-[10px] font-black uppercase tracking-wider flex items-center gap-1.5"><span class="w-2 h-2 rounded-full bg-rose-500"></span>Alta Prioridad</span>
                         <h3 id="count-urgente" class="text-2xl font-black text-gray-800 mt-2">0</h3>
@@ -90,7 +97,7 @@
                 </div>
 
                 <!-- 2. Analíticas Financieras Detalladas de Odoo -->
-                <div class="bg-white p-6 rounded-3xl card-shadow border border-gray-100 space-y-5">
+                <div class="bg-white p-4 md:p-6 rounded-3xl card-shadow border border-gray-100 space-y-5">
                     <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
                         <div class="flex flex-wrap items-baseline gap-2">
                             <span id="meta-ganado-main" class="text-2xl font-black text-purple-900">$0.00</span>
@@ -107,7 +114,7 @@
                     </div>
 
                     <!-- Fila de Tarjetas Interactivas de Odoo -->
-                    <div class="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-8 gap-3">
+                    <div class="grid grid-cols-2 md:grid-cols-4 xl:grid-cols-8 gap-3">
                         <div onclick="abrirDesgloseEtapa('Enviado')" class="bg-slate-50/80 p-3 rounded-xl border border-gray-100 hover:border-blue-400 hover:bg-blue-50/20 transition-all cursor-pointer group">
                             <span class="text-[9px] font-black text-blue-500 uppercase tracking-wider flex items-center justify-between"><span class="flex items-center gap-1"><i class="fas fa-paper-plane"></i> Enviado</span> <i class="fas fa-chevron-right opacity-0 group-hover:opacity-100 text-[8px] transition-all"></i></span>
                             <p id="monto-enviado" class="text-sm font-black text-gray-800 mt-1">$0.00</p>
@@ -159,7 +166,7 @@
                         <i class="fas fa-search absolute left-4 top-3.5 text-gray-300"></i>
                         <input type="text" id="buscador" placeholder="Buscar por No. Proyecto, cliente o solución..." class="w-full pl-12 pr-4 py-3 bg-gray-50 rounded-xl outline-none text-sm">
                     </div>
-                    <div class="flex gap-2 w-full md:w-auto">
+                    <div class="flex flex-col sm:flex-row gap-2 w-full md:w-auto">
                         <select id="filtro-area" class="flex-1 md:w-48 p-3 bg-purple-50 text-purple-700 rounded-xl text-sm outline-none font-bold border border-transparent cursor-pointer">
                             <option value="Todos">Todas las Áreas</option>
                             <option value="Redes">Área: Redes</option>
@@ -178,8 +185,8 @@
                     </div>
                 </div>
 
-                <!-- 4. Tabla Principal de Oportunidades -->
-                <div class="bg-white rounded-[2rem] card-shadow overflow-hidden border border-gray-100">
+                <!-- 4. Tabla Principal de Oportunidades - Escritorio -->
+                <div class="hidden md:block bg-white rounded-[2rem] card-shadow overflow-hidden border border-gray-100">
                     <div class="overflow-x-auto">
                         <table class="w-full text-left border-collapse">
                             <thead class="bg-gray-50/50 text-gray-400 text-[10px] uppercase tracking-[0.2em] border-b border-gray-100">
@@ -196,13 +203,16 @@
                         </table>
                     </div>
                 </div>
+
+                <!-- 4B. Tarjetas de oportunidades - Móvil -->
+                <div id="lista-proyectos-mobile" class="md:hidden space-y-4"></div>
             </main>
         </div>
     </div>
 
     <!-- MODAL FORMULARIO PROYECTO -->
     <div id="modal-proyecto" class="hidden fixed inset-0 bg-gray-900/60 backdrop-blur-sm flex items-center justify-center p-4 z-50">
-        <div class="bg-white rounded-[2.5rem] w-full max-w-2xl p-8 shadow-2xl overflow-y-auto max-h-[90vh]">
+        <div class="bg-white rounded-[2rem] md:rounded-[2.5rem] w-full max-w-2xl p-5 md:p-8 shadow-2xl overflow-y-auto max-h-[92vh]">
             <div class="flex justify-between items-center mb-6">
                 <h2 id="modal-titulo" class="text-2xl font-black text-purple-900"><i class="fas fa-clipboard-list text-purple-500 mr-2"></i> Oportunidad</h2>
                 <button onclick="cerrarModal()" class="text-gray-400 hover:text-gray-600"><i class="fas fa-times text-xl"></i></button>
@@ -895,6 +905,7 @@
             clienteSeleccionado = cliente;
             document.getElementById('titulo-vista').innerText = cliente ? `Oportunidades: ${cliente}` : "Todos los pendientes";
             aplicarFiltrosYRenderizar();
+            if (window.innerWidth < 768) cerrarSidebarMovil();
         };
 
         const aplicarFiltrosYRenderizar = () => {
@@ -902,7 +913,12 @@
             const filterState = document.getElementById('filtro-estado').value;
             const areaFiltro = document.getElementById('filtro-area').value;
             const list = document.getElementById('lista-proyectos');
+            const mobileList = document.getElementById('lista-proyectos-mobile');
+
             list.innerHTML = '';
+            if (mobileList) mobileList.innerHTML = '';
+
+            let resultados = 0;
 
             cacheProyectos.forEach(proyecto => {
                 const { id, d } = proyecto;
@@ -916,12 +932,23 @@
                 const cumpleArea = (areaFiltro === 'Todos') || (areaProyecto === areaFiltro);
 
                 if (cumpleCliente && cumpleBusqueda && cumpleEstado && cumpleArea) {
+                    resultados++;
                     const prioColor = {
                         'Urgente': 'bg-rose-100 text-rose-600',
                         'Alta': 'bg-orange-100 text-orange-600',
                         'Media': 'bg-indigo-100 text-indigo-600',
                         'Baja': 'bg-slate-100 text-slate-500'
                     }[d.prioridad] || 'bg-gray-100 text-gray-600';
+
+                    const etapaColor = {
+                        'Enviado': 'bg-blue-50 text-blue-600 border-blue-100',
+                        'Stand by': 'bg-slate-50 text-slate-600 border-slate-100',
+                        'Ganado sin PO': 'bg-teal-50 text-teal-700 border-teal-100',
+                        'Ganado': 'bg-emerald-50 text-emerald-700 border-emerald-100',
+                        'Facturado': 'bg-purple-50 text-purple-700 border-purple-100',
+                        'Pagado': 'bg-amber-50 text-amber-700 border-amber-100',
+                        'Perdido': 'bg-rose-50 text-rose-700 border-rose-100'
+                    }[estReal] || 'bg-gray-50 text-gray-600 border-gray-100';
 
                     list.innerHTML += `
                         <tr class="hover:bg-purple-50/40 transition-all border-b border-gray-50">
@@ -953,8 +980,72 @@
                                 </div>
                             </td>
                         </tr>`;
+
+                    if (mobileList) {
+                        mobileList.innerHTML += `
+                            <article class="bg-white rounded-3xl card-shadow border border-gray-100 p-4 space-y-3">
+                                <div class="flex items-start justify-between gap-3">
+                                    <div class="min-w-0">
+                                        <p class="font-black text-purple-900 text-base leading-tight">${obtenerNoProyecto(d) || '--'}</p>
+                                        <p class="text-xs font-bold text-gray-500 truncate">${obtenerCliente(d) || 'Sin cliente'}</p>
+                                    </div>
+                                    <div class="flex gap-1 shrink-0">
+                                        <button onclick="editar('${id}')" class="w-10 h-10 text-indigo-600 bg-indigo-50 rounded-2xl border border-indigo-100 flex items-center justify-center"><i class="fas fa-edit text-sm"></i></button>
+                                        <button onclick="borrar('${id}')" class="w-10 h-10 text-rose-500 bg-rose-50 rounded-2xl border border-rose-100 flex items-center justify-center"><i class="fas fa-trash text-sm"></i></button>
+                                    </div>
+                                </div>
+
+                                <div>
+                                    <p class="text-[10px] font-black uppercase tracking-widest text-gray-400">Oportunidad</p>
+                                    <h3 class="font-black text-gray-800 leading-snug mt-1">${obtenerNombreOportunidad(d) || 'Sin oportunidad'}</h3>
+                                    <p class="text-xs text-gray-400 line-clamp-2 mt-1">${d.solucion || 'Sin descripción'}</p>
+                                </div>
+
+                                <div class="grid grid-cols-2 gap-2 text-xs">
+                                    <div class="p-3 rounded-2xl border ${etapaColor}">
+                                        <p class="font-black uppercase text-[9px] tracking-wider opacity-70">Etapa</p>
+                                        <p class="font-black mt-1">${estReal}</p>
+                                    </div>
+                                    <div class="p-3 rounded-2xl bg-purple-50 border border-purple-100 text-purple-800">
+                                        <p class="font-black uppercase text-[9px] tracking-wider opacity-70">Monto</p>
+                                        <p class="font-black mt-1">${formatMoneda(d.monto || 0)}</p>
+                                    </div>
+                                    <div class="p-3 rounded-2xl bg-gray-50 border border-gray-100 text-gray-600">
+                                        <p class="font-black uppercase text-[9px] tracking-wider opacity-70">Prioridad</p>
+                                        <span class="inline-block mt-1 px-2 py-1 rounded-lg text-[9px] font-black uppercase ${prioColor}">${d.prioridad}</span>
+                                    </div>
+                                    <div class="p-3 rounded-2xl bg-gray-50 border border-gray-100 text-gray-600">
+                                        <p class="font-black uppercase text-[9px] tracking-wider opacity-70">Fecha</p>
+                                        <p class="font-bold mt-1">${d.fecha || '--'}</p>
+                                    </div>
+                                </div>
+
+                                <div>
+                                    <div class="flex justify-between text-[10px] font-black uppercase tracking-wider text-gray-400 mb-1">
+                                        <span>Progreso</span><span>${d.progreso || 0}%</span>
+                                    </div>
+                                    <div class="w-full bg-gray-100 rounded-full h-2">
+                                        <div class="bg-purple-500 h-2 rounded-full" style="width: ${d.progreso || 0}%"></div>
+                                    </div>
+                                </div>
+                            </article>`;
+                    }
                 }
             });
+
+            if (resultados === 0) {
+                list.innerHTML = `
+                    <tr>
+                        <td colspan="6" class="p-8 text-center text-xs font-bold text-gray-400 uppercase tracking-wider">No hay oportunidades con estos filtros</td>
+                    </tr>`;
+
+                if (mobileList) {
+                    mobileList.innerHTML = `
+                        <div class="bg-white rounded-3xl card-shadow border border-gray-100 p-8 text-center text-xs font-bold text-gray-400 uppercase tracking-wider">
+                            No hay oportunidades con estos filtros
+                        </div>`;
+                }
+            }
         };
 
         document.getElementById('buscador').addEventListener('input', aplicarFiltrosYRenderizar);
@@ -1101,6 +1192,26 @@
             XLSX.utils.book_append_sheet(wb, ws, "Pipeline");
             XLSX.writeFile(wb, "Reporte_Pipeline_Estructurado.xlsx");
         };
+
+
+        const abrirSidebarMovil = () => {
+            const sidebar = document.getElementById('sidebar');
+            const overlay = document.getElementById('sidebar-overlay');
+            if (!sidebar || !overlay) return;
+            sidebar.classList.remove('-translate-x-full');
+            overlay.classList.remove('hidden');
+        };
+
+        const cerrarSidebarMovil = () => {
+            const sidebar = document.getElementById('sidebar');
+            const overlay = document.getElementById('sidebar-overlay');
+            if (!sidebar || !overlay) return;
+            sidebar.classList.add('-translate-x-full');
+            overlay.classList.add('hidden');
+        };
+
+        document.getElementById('mobileMenuBtn')?.addEventListener('click', abrirSidebarMovil);
+        document.getElementById('sidebar-overlay')?.addEventListener('click', cerrarSidebarMovil);
 
         document.addEventListener('DOMContentLoaded', () => {
             cargarDatosDesdeGoogleSheets(false);
