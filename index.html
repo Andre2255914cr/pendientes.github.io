@@ -77,7 +77,12 @@
     <div class="bg-white rounded-2xl p-5 card-shadow border border-gray-100">
         <div class="flex justify-between items-center mb-3">
             <h3 class="font-black text-purple-900">REDES</h3>
-            <span id="q-redes" class="text-xs font-bold bg-purple-100 text-purple-700 px-2 py-1 rounded-full"></span>
+           <select id="selector-q-metas" class="text-xs font-bold bg-purple-100 text-purple-700 px-2 py-1 rounded-full outline-none">
+            <option value="Q1">Q1</option>
+            <option value="Q2" selected>Q2</option>
+            <option value="Q3">Q3</option>
+            <option value="Q4">Q4</option>
+    </select>
         </div>
 
         <div class="space-y-1 text-sm text-gray-600">
@@ -91,7 +96,7 @@
     <div class="bg-white rounded-2xl p-5 card-shadow border border-gray-100">
         <div class="flex justify-between items-center mb-3">
             <h3 class="font-black text-purple-900">INFRAESTRUCTURA</h3>
-            <span id="q-infra" class="text-xs font-bold bg-purple-100 text-purple-700 px-2 py-1 rounded-full"></span>
+            <span id="q-infra" class="text-xs font-bold bg-purple-100 text-purple-700 px-2 py-1 rounded-full">Q2</span>
         </div>
 
         <div class="space-y-1 text-sm text-gray-600">
@@ -368,19 +373,14 @@
     }
 };
 
-function obtenerQActual() {
-    const mes = new Date().getMonth() + 1;
-
-    if (mes <= 3) return 'Q1';
-    if (mes <= 6) return 'Q2';
-    if (mes <= 9) return 'Q3';
-
-    return 'Q4';
+function obtenerQSeleccionado() {
+    const selector = document.getElementById('selector-q-metas');
+    return selector ? selector.value : 'Q2';
 }
 
 function obtenerMetaAcumulada(area) {
     const metas = METAS_Q[area];
-    const qActual = obtenerQActual();
+    const qActual = document.getElementById('selector-q-metas')?.value || 'Q2';
 
     let acumulado = 0;
 
@@ -1116,10 +1116,12 @@ function obtenerMetaAcumulada(area) {
             }
         };
 
-        document.getElementById('buscador').addEventListener('input', aplicarFiltrosYRenderizar);
-        document.getElementById('filtro-estado').addEventListener('change', aplicarFiltrosYRenderizar);
-        document.getElementById('filtro-area').addEventListener('change', () => window.forzarRecalculoFinanciero());
-        document.getElementById('filtro-periodo').addEventListener('change', () => window.forzarRecalculoFinanciero());
+     document.getElementById('selector-q-metas').addEventListener('change', () => {
+    document.getElementById('q-infra').innerText =
+        document.getElementById('selector-q-metas').value;
+
+    window.forzarRecalculoFinanciero();
+});
 
         window.forzarRecalculoFinanciero = () => {
             let cuentasMapeadas = {};
@@ -1197,8 +1199,10 @@ function obtenerMetaAcumulada(area) {
             const avanceRedes = metaRedes > 0 ? (totalRedesQ / metaRedes) * 100 : 0;
             const avanceInfra = metaInfra > 0 ? (totalInfraQ / metaInfra) * 100 : 0;
             
-            document.getElementById('q-redes').innerText = qActual;
-            document.getElementById('q-infra').innerText = qActual;
+            const qSeleccionado =
+            document.getElementById('selector-q-metas')?.value || 'Q2';
+
+            document.getElementById('q-infra').innerText = qSeleccionado;
             
             document.getElementById('meta-redes').innerText = formatMoneda(metaRedes);
             document.getElementById('meta-infra').innerText = formatMoneda(metaInfra);
