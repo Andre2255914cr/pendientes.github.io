@@ -48,7 +48,7 @@
                     </button>
                     <div>
                     <h2 class="text-lg font-black tracking-tight" id="titulo-vista">Todos los pendientes</h2>
-                    <p class="text-[11px] text-purple-200 font-medium uppercase tracking-wider">Martes, 2 de Junio de 2026</p>
+                    <p id="fecha-actual" class="text-[11px] text-purple-200 font-medium uppercase tracking-wider"></p>
                     </div>
                 </div>
                 
@@ -1212,19 +1212,55 @@
 
         document.getElementById('mobileMenuBtn')?.addEventListener('click', abrirSidebarMovil);
         document.getElementById('sidebar-overlay')?.addEventListener('click', cerrarSidebarMovil);
+        function actualizarFechaActual() {
+        const fecha = new Date();
 
+        const dias = [
+        'Domingo',
+        'Lunes',
+        'Martes',
+        'Miércoles',
+        'Jueves',
+        'Viernes',
+        'Sábado'
+        ];
+
+        const meses = [
+        'Enero',
+        'Febrero',
+        'Marzo',
+        'Abril',
+        'Mayo',
+        'Junio',
+        'Julio',
+        'Agosto',
+        'Septiembre',
+        'Octubre',
+        'Noviembre',
+        'Diciembre'
+    ];
+
+    const textoFecha =
+        `${dias[fecha.getDay()]}, ${fecha.getDate()} de ${meses[fecha.getMonth()]} de ${fecha.getFullYear()}`;
+
+    document.getElementById('fecha-actual').textContent = textoFecha;
+    }
         document.addEventListener('DOMContentLoaded', () => {
-            cargarDatosDesdeGoogleSheets(false);
 
-            // Recarga automática cada 30 segundos.
-            // Si el modal está abierto, no actualiza para no borrar lo que estés escribiendo.
-            setInterval(() => {
-                const modalAbierto = !document.getElementById('modal-proyecto').classList.contains('hidden');
-                if (!modalAbierto) {
-                    cargarDatosDesdeGoogleSheets(true);
-                }
-            }, 30000);
-        });
+    actualizarFechaActual();
+
+    cargarDatosDesdeGoogleSheets(false);
+
+    setInterval(() => {
+        const modalAbierto =
+            !document.getElementById('modal-proyecto').classList.contains('hidden');
+
+        if (!modalAbierto) {
+            cargarDatosDesdeGoogleSheets(true);
+        }
+    }, 30000);
+
+});
     </script>
 
 </body>
