@@ -71,7 +71,38 @@
 
             <!-- MAIN CONTENT -->
             <main class="p-4 md:p-6 space-y-6 max-w-[1600px] w-full mx-auto">
+                    <!-- AVANCE ACUMULADO POR Q -->
+<div class="grid grid-cols-1 md:grid-cols-2 gap-4">
 
+    <div class="bg-white rounded-2xl p-5 card-shadow border border-gray-100">
+        <div class="flex justify-between items-center mb-3">
+            <h3 class="font-black text-purple-900">REDES</h3>
+            <span id="q-redes" class="text-xs font-bold bg-purple-100 text-purple-700 px-2 py-1 rounded-full"></span>
+        </div>
+
+        <div class="space-y-1 text-sm text-gray-600">
+            <p>Meta acumulada: <span id="meta-redes" class="font-black text-gray-800"></span></p>
+            <p>Actual: <span id="actual-redes" class="font-black text-gray-800"></span></p>
+            <p>Faltante / Excedente: <span id="faltante-redes" class="font-black"></span></p>
+            <p>Avance: <span id="avance-redes" class="font-black text-purple-700"></span></p>
+        </div>
+    </div>
+
+    <div class="bg-white rounded-2xl p-5 card-shadow border border-gray-100">
+        <div class="flex justify-between items-center mb-3">
+            <h3 class="font-black text-purple-900">INFRAESTRUCTURA</h3>
+            <span id="q-infra" class="text-xs font-bold bg-purple-100 text-purple-700 px-2 py-1 rounded-full"></span>
+        </div>
+
+        <div class="space-y-1 text-sm text-gray-600">
+            <p>Meta acumulada: <span id="meta-infra" class="font-black text-gray-800"></span></p>
+            <p>Actual: <span id="actual-infra" class="font-black text-gray-800"></span></p>
+            <p>Faltante / Excedente: <span id="faltante-infra" class="font-black"></span></p>
+            <p>Avance: <span id="avance-infra" class="font-black text-purple-700"></span></p>
+        </div>
+    </div>
+
+</div>
                 <!-- 1. Bloque de Métricas de Control -->
                 <div class="grid grid-cols-2 lg:grid-cols-5 gap-3 md:gap-4">
                     <div class="bg-white p-4 rounded-2xl card-shadow border-b-4 border-rose-500 flex flex-col justify-between">
@@ -1094,7 +1125,8 @@ function obtenerMetaAcumulada(area) {
             let cuentasMapeadas = {};
             let alta=0, media=0, baja=0, comp=0, perd=0;
             let dolEnviado=0, dolStandby=0, dolGanadoSinPo=0, dolGanado=0, dolFacturado=0, dolPagado=0, dolPerdido=0;
-
+            let totalRedesQ = 0;
+            let totalInfraQ = 0;
             const periodoSeleccionado = document.getElementById('filtro-periodo').value;
             const areaFiltro = document.getElementById('filtro-area').value;
 
@@ -1104,7 +1136,10 @@ function obtenerMetaAcumulada(area) {
                 const est = d.estado || 'Enviado';
                 const areaProyecto = d.area || 'Redes';
                 const fechaLimite = d.fecha || '';
-
+                if (['Ganado', 'Ganado sin PO', 'Facturado', 'Pagado'].includes(est)) {
+                if (areaProyecto === 'Redes') totalRedesQ += monto;
+                if (areaProyecto === 'Infraestructura') totalInfraQ += monto;
+                }
                 if (areaFiltro !== 'Todos' && areaProyecto !== areaFiltro) return;
 
                 if(d.cliente) cuentasMapeadas[d.cliente] = (cuentasMapeadas[d.cliente] || 0) + 1;
@@ -1151,7 +1186,41 @@ function obtenerMetaAcumulada(area) {
             document.getElementById('monto-pagado').innerText = formatMoneda(dolPagado);
             document.getElementById('monto-faltante').innerText = formatMoneda(dolFaltante);
             document.getElementById('monto-perdido').innerText = formatMoneda(dolPerdido);
+            const qActual = obtenerQActual();
 
+            const metaRedes = obtenerMetaAcumulada('Redes');
+            const metaInfra = obtenerMetaAcumulada('Infraestructura');
+
+            const difRedes = totalRedesQ - metaRedes;
+            const difInfra = totalInfraQ - metaInfra;
+            
+            const avanceRedes = metaRedes > 0 ? (totalRedesQ / metaRedes) * 100 : 0;
+            const avanceInfra = metaInfra > 0 ? (totalInfraQ / metaInfra) * 100 : 0;
+            
+            document.getElementById('q-redes').innerText = qActual;
+            document.getElementById('q-infra').innerText = qActual;
+            
+            document.getElementById('meta-redes').innerText = formatMoneda(metaRedes);
+            document.getElementById('meta-infra').innerText = formatMoneda(metaInfra);
+            
+            document.getElementById('actual-redes').innerText = formatMoneda(totalRedesQ);
+            document.getElementById('actual-infra').innerText = formatMoneda(totalInfraQ);
+            
+            document.getElementById('faltante-redes').innerText =
+                difRedes >= 0 ? `+${formatMoneda(difRedes)}` : `-${formatMoneda(Math.abs(difRedes))}`;
+            
+            document.getElementById('faltante-infra').innerText =
+                difInfra >= 0 ? `+${formatMoneda(difInfra)}` : `-${formatMoneda(Math.abs(difInfra))}`;
+            
+            document.getElementById('faltante-redes').className =
+                difRedes >= 0 ? 'font-black text-emerald-600' : 'font-black text-rose-600';
+            
+            document.getElementById('faltante-infra').className =
+                difInfra >= 0 ? 'font-black text-emerald-600' : 'font-black text-rose-600';
+            
+            document.getElementById('avance-redes').innerText = `${avanceRedes.toFixed(2)}%`;
+            document.getElementById('avance-infra').innerText = `${avanceInfra.toFixed(2)}%`;
+            
             const sidebarDiv = document.getElementById('lista-cuentas-sidebar');
             sidebarDiv.innerHTML = `
                 <button onclick="filtrarPorCliente(null)" class="w-full flex items-center justify-between px-3 py-2 rounded-xl text-left text-xs font-bold ${!clienteSeleccionado ? 'bg-purple-50 text-purple-700' : 'text-gray-600 hover:bg-gray-50'} transition">
