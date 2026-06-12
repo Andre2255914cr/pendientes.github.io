@@ -322,8 +322,45 @@
         let cacheProyectos = [];
         let clienteSeleccionado = null;
         let periodosInicializados = false;
+        const METAS_Q = {
+    Redes: {
+        Q1: 150000,
+        Q2: 250000,
+        Q3: 350000,
+        Q4: 250000
+    },
+    Infraestructura: {
+        Q1: 450000,
+        Q2: 750000,
+        Q3: 1050000,
+        Q4: 750000
+    }
+};
 
-        // Mantiene en pantalla los cambios hechos desde el HTML aunque el CSV publicado tarde en actualizarse.
+function obtenerQActual() {
+    const mes = new Date().getMonth() + 1;
+
+    if (mes <= 3) return 'Q1';
+    if (mes <= 6) return 'Q2';
+    if (mes <= 9) return 'Q3';
+
+    return 'Q4';
+}
+
+function obtenerMetaAcumulada(area) {
+    const metas = METAS_Q[area];
+    const qActual = obtenerQActual();
+
+    let acumulado = 0;
+
+    if (qActual === 'Q1') acumulado = metas.Q1;
+    if (qActual === 'Q2') acumulado = metas.Q1 + metas.Q2;
+    if (qActual === 'Q3') acumulado = metas.Q1 + metas.Q2 + metas.Q3;
+    if (qActual === 'Q4') acumulado = metas.Q1 + metas.Q2 + metas.Q3 + metas.Q4;
+
+    return acumulado;
+}
+      
         const TIEMPO_PROTECCION_CAMBIOS_MS = 120000;
         const cambiosLocalesPorFila = new Map();
         const filasEliminadasLocales = new Map();
