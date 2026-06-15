@@ -94,12 +94,13 @@
         <div class="space-y-1 text-sm text-gray-600">
             <p>Meta acumulada: <span id="meta-redes" class="font-black text-gray-800"></span></p>
             <p>Actual: <span id="actual-redes" class="font-black text-gray-800"></span></p>
-            <<p><span id="label-diferencia-redes">Faltante:</span> <span id="faltante-redes" class="font-black"></span></p>
+            <p><span id="label-diferencia-redes">Faltante:</span> <span id="faltante-redes" class="font-black"></span></p>
             <p>Avance: <span id="avance-redes" class="font-black text-purple-700"></span></p>
             <div class="w-full bg-gray-100 rounded-full h-2 mt-3">
     <div id="barra-redes-q" class="bg-purple-600 h-2 rounded-full transition-all duration-300" style="width: 0%"></div>
 </div>
 <p id="estado-redes-q" class="text-[11px] font-black mt-2"></p>
+<p id="resumen-redes-q" class="text-[11px] text-gray-500 font-semibold mt-1"></p>
         </div>
     </div>
 
@@ -118,6 +119,7 @@
     <div id="barra-infra-q" class="bg-purple-600 h-2 rounded-full transition-all duration-300" style="width: 0%"></div>
 </div>
 <p id="estado-infra-q" class="text-[11px] font-black mt-2"></p>
+<p id="resumen-infra-q" class="text-[11px] text-gray-500 font-semibold mt-1"></p>
         </div>
     </div>
 
@@ -616,13 +618,6 @@ function obtenerMetaAcumulada(area) {
                 cacheProyectos = [];
                 actualizarSelectorPeriodos(cacheProyectos);
                 window.forzarRecalculoFinanciero();
-              if (!APPS_SCRIPT_URL || APPS_SCRIPT_URL.includes('PEGA_AQUI')) {
-    console.warn('Falta configurar la URL de Apps Script.');
-    cacheProyectos = [];
-    actualizarSelectorPeriodos(cacheProyectos);
-    window.forzarRecalculoFinanciero();
-    return;
-}
                 return;
             }
 
@@ -650,19 +645,17 @@ function obtenerMetaAcumulada(area) {
 
                 actualizarSelectorPeriodos(cacheProyectos);
                 window.forzarRecalculoFinanciero();
+
                 const ahora = new Date();
+                const hora = ahora.toLocaleTimeString('es-MX', {
+                    hour: '2-digit',
+                    minute: '2-digit'
+                });
 
-const hora = ahora.toLocaleTimeString('es-MX', {
-    hour: '2-digit',
-    minute: '2-digit'
-});
-
-const ultimaActualizacion = document.getElementById('ultima-actualizacion');
-
-if (ultimaActualizacion) {
-    ultimaActualizacion.innerText =
-        `Última actualización: ${hora}`;
-}
+                const ultimaActualizacion = document.getElementById('ultima-actualizacion');
+                if (ultimaActualizacion) {
+                    ultimaActualizacion.innerText = `Última actualización: ${hora}`;
+                }
             } catch (error) {
                 console.error('Error cargando datos desde Apps Script:', error);
                 if (!modoSilencioso) {
@@ -1248,6 +1241,21 @@ if (ultimaActualizacion) {
 
 pintarEstadoQ(avanceRedes, 'barra-redes-q', 'estado-redes-q');
 pintarEstadoQ(avanceInfra, 'barra-infra-q', 'estado-infra-q');
+
+            const resumenRedes = document.getElementById('resumen-redes-q');
+            const resumenInfra = document.getElementById('resumen-infra-q');
+
+            if (resumenRedes) {
+                resumenRedes.innerText = difRedes >= 0
+                    ? `Redes supera la meta acumulada de ${qSeleccionado} por ${formatMoneda(difRedes)}.`
+                    : `Faltan ${formatMoneda(Math.abs(difRedes))} para alcanzar la meta acumulada de ${qSeleccionado}.`;
+            }
+
+            if (resumenInfra) {
+                resumenInfra.innerText = difInfra >= 0
+                    ? `Infraestructura supera la meta acumulada de ${qSeleccionado} por ${formatMoneda(difInfra)}.`
+                    : `Faltan ${formatMoneda(Math.abs(difInfra))} para alcanzar la meta acumulada de ${qSeleccionado}.`;
+            }
         };
 
         const actualizarSidebarClientes = () => {
