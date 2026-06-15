@@ -55,6 +55,12 @@
                 <div class="flex items-center gap-3 sm:gap-6 w-full sm:w-auto overflow-x-auto pb-1 sm:pb-0">
                     <div class="text-right hidden sm:block">
                     </div>
+                    <div class="text-right hidden sm:block">
+    <span id="ultima-actualizacion"
+          class="text-[10px] text-purple-200 font-bold uppercase tracking-wider">
+        Última actualización: --
+    </span>
+</div>
                     <div class="flex gap-2.5 min-w-max">
                         <button onclick="exportarExcel()" class="bg-emerald-500 hover:bg-emerald-600 text-white px-4 py-2 rounded-xl text-xs font-bold transition flex items-center gap-2 shadow-sm">
                             <i class="fas fa-file-excel"></i> EXCEL
@@ -90,6 +96,10 @@
             <p>Actual: <span id="actual-redes" class="font-black text-gray-800"></span></p>
             <p>Faltante / Excedente: <span id="faltante-redes" class="font-black"></span></p>
             <p>Avance: <span id="avance-redes" class="font-black text-purple-700"></span></p>
+            <div class="w-full bg-gray-100 rounded-full h-2 mt-3">
+    <div id="barra-redes-q" class="bg-purple-600 h-2 rounded-full transition-all duration-300" style="width: 0%"></div>
+</div>
+<p id="estado-redes-q" class="text-[11px] font-black mt-2"></p>
         </div>
     </div>
 
@@ -104,6 +114,10 @@
             <p>Actual: <span id="actual-infra" class="font-black text-gray-800"></span></p>
             <p>Faltante / Excedente: <span id="faltante-infra" class="font-black"></span></p>
             <p>Avance: <span id="avance-infra" class="font-black text-purple-700"></span></p>
+            <div class="w-full bg-gray-100 rounded-full h-2 mt-3">
+    <div id="barra-infra-q" class="bg-purple-600 h-2 rounded-full transition-all duration-300" style="width: 0%"></div>
+</div>
+<p id="estado-infra-q" class="text-[11px] font-black mt-2"></p>
         </div>
     </div>
 
@@ -602,6 +616,18 @@ function obtenerMetaAcumulada(area) {
                 cacheProyectos = [];
                 actualizarSelectorPeriodos(cacheProyectos);
                 window.forzarRecalculoFinanciero();
+                const ahora = new Date();
+                const hora = ahora.toLocaleTimeString('es-MX', {
+                hour: '2-digit',
+                minute: '2-digit'
+});
+
+const ultimaActualizacion = document.getElementById('ultima-actualizacion');
+
+if (ultimaActualizacion) {
+    ultimaActualizacion.innerText =
+        `Última actualización: ${hora}`;
+}
                 return;
             }
 
@@ -1193,6 +1219,30 @@ function obtenerMetaAcumulada(area) {
 
             document.getElementById('avance-redes').innerText = `${avanceRedes.toFixed(2)}%`;
             document.getElementById('avance-infra').innerText = `${avanceInfra.toFixed(2)}%`;
+            const pintarEstadoQ = (avance, barraId, estadoId) => {
+    const barra = document.getElementById(barraId);
+    const estado = document.getElementById(estadoId);
+
+    const porcentaje = Math.min(100, avance);
+    barra.style.width = `${porcentaje}%`;
+
+    if (avance >= 100) {
+        barra.className = 'bg-emerald-500 h-2 rounded-full transition-all duration-300';
+        estado.className = 'text-[11px] font-black mt-2 text-emerald-600';
+        estado.innerText = 'META CUMPLIDA';
+    } else if (avance >= 80) {
+        barra.className = 'bg-amber-400 h-2 rounded-full transition-all duration-300';
+        estado.className = 'text-[11px] font-black mt-2 text-amber-600';
+        estado.innerText = 'CERCA DE LA META';
+    } else {
+        barra.className = 'bg-rose-500 h-2 rounded-full transition-all duration-300';
+        estado.className = 'text-[11px] font-black mt-2 text-rose-600';
+        estado.innerText = 'EN RIESGO';
+    }
+};
+
+pintarEstadoQ(avanceRedes, 'barra-redes-q', 'estado-redes-q');
+pintarEstadoQ(avanceInfra, 'barra-infra-q', 'estado-infra-q');
         };
 
         const actualizarSidebarClientes = () => {
@@ -1235,7 +1285,12 @@ function obtenerMetaAcumulada(area) {
         document.getElementById('filtro-estado').addEventListener('change', aplicarFiltrosYRenderizar);
         document.getElementById('filtro-area').addEventListener('change', () => window.forzarRecalculoFinanciero());
         document.getElementById('filtro-periodo').addEventListener('change', () => window.forzarRecalculoFinanciero());
-        document.getElementById('selector-q-metas').addEventListener('change', () => actualizarMetasQ());
+        document.getElementById('selector-q-metas').addEventListener('change', () => {
+        const qSeleccionado = document.getElementById('selector-q-metas').value;
+        document.getElementById('q-infra').innerText = qSeleccionado;
+        window.forzarRecalculoFinanciero();
+});
+        
         window.addEventListener('resize', debounce(aplicarFiltrosYRenderizar, 200));
 
         window.forzarRecalculoFinanciero = () => {
@@ -1426,7 +1481,7 @@ function obtenerMetaAcumulada(area) {
         if (!modalAbierto) {
             cargarDatosDesdeGoogleSheets(true);
         }
-    }, 30000);
+    }, 60000);
 
 });
     </script>
