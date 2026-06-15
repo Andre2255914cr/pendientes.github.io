@@ -616,17 +616,12 @@ function obtenerMetaAcumulada(area) {
                 cacheProyectos = [];
                 actualizarSelectorPeriodos(cacheProyectos);
                 window.forzarRecalculoFinanciero();
-                const ahora = new Date();
-                const hora = ahora.toLocaleTimeString('es-MX', {
-                hour: '2-digit',
-                minute: '2-digit'
-});
-
-const ultimaActualizacion = document.getElementById('ultima-actualizacion');
-
-if (ultimaActualizacion) {
-    ultimaActualizacion.innerText =
-        `Última actualización: ${hora}`;
+              if (!APPS_SCRIPT_URL || APPS_SCRIPT_URL.includes('PEGA_AQUI')) {
+    console.warn('Falta configurar la URL de Apps Script.');
+    cacheProyectos = [];
+    actualizarSelectorPeriodos(cacheProyectos);
+    window.forzarRecalculoFinanciero();
+    return;
 }
                 return;
             }
@@ -655,6 +650,19 @@ if (ultimaActualizacion) {
 
                 actualizarSelectorPeriodos(cacheProyectos);
                 window.forzarRecalculoFinanciero();
+                const ahora = new Date();
+
+const hora = ahora.toLocaleTimeString('es-MX', {
+    hour: '2-digit',
+    minute: '2-digit'
+});
+
+const ultimaActualizacion = document.getElementById('ultima-actualizacion');
+
+if (ultimaActualizacion) {
+    ultimaActualizacion.innerText =
+        `Última actualización: ${hora}`;
+}
             } catch (error) {
                 console.error('Error cargando datos desde Apps Script:', error);
                 if (!modoSilencioso) {
