@@ -84,17 +84,17 @@
         <div class="flex justify-between items-center mb-3">
             <h3 class="font-black text-purple-900">REDES</h3>
            <select id="selector-q-metas" class="text-xs font-bold bg-purple-100 text-purple-700 px-2 py-1 rounded-full outline-none">
-            <option value="Q1">Q1</option>
-            <option value="Q2" selected>Q2</option>
-            <option value="Q3">Q3</option>
-            <option value="Q4">Q4</option>
+          <option value="Q1">Q1 · Acumulado</option>
+          <option value="Q2" selected>Q2 · Acumulado</option>
+          <option value="Q3">Q3 · Acumulado</option>
+          <option value="Q4">Q4 · Acumulado</option>
     </select>
         </div>
 
         <div class="space-y-1 text-sm text-gray-600">
             <p>Meta acumulada: <span id="meta-redes" class="font-black text-gray-800"></span></p>
             <p>Actual: <span id="actual-redes" class="font-black text-gray-800"></span></p>
-            <p>Faltante / Excedente: <span id="faltante-redes" class="font-black"></span></p>
+            <<p><span id="label-diferencia-redes">Faltante:</span> <span id="faltante-redes" class="font-black"></span></p>
             <p>Avance: <span id="avance-redes" class="font-black text-purple-700"></span></p>
             <div class="w-full bg-gray-100 rounded-full h-2 mt-3">
     <div id="barra-redes-q" class="bg-purple-600 h-2 rounded-full transition-all duration-300" style="width: 0%"></div>
@@ -112,7 +112,7 @@
         <div class="space-y-1 text-sm text-gray-600">
             <p>Meta acumulada: <span id="meta-infra" class="font-black text-gray-800"></span></p>
             <p>Actual: <span id="actual-infra" class="font-black text-gray-800"></span></p>
-            <p>Faltante / Excedente: <span id="faltante-infra" class="font-black"></span></p>
+            <p><span id="label-diferencia-infra">Faltante:</span> <span id="faltante-infra" class="font-black"></span></p>
             <p>Avance: <span id="avance-infra" class="font-black text-purple-700"></span></p>
             <div class="w-full bg-gray-100 rounded-full h-2 mt-3">
     <div id="barra-infra-q" class="bg-purple-600 h-2 rounded-full transition-all duration-300" style="width: 0%"></div>
@@ -1214,16 +1214,13 @@ if (ultimaActualizacion) {
             document.getElementById('meta-infra').innerText = formatMoneda(metaInfra);
             document.getElementById('actual-redes').innerText = formatMoneda(totalPorArea.Redes);
             document.getElementById('actual-infra').innerText = formatMoneda(totalPorArea.Infraestructura);
+            document.getElementById('label-diferencia-redes').innerText = difRedes >= 0 ? 'Excedente:' : 'Faltante:';
 
-            document.getElementById('faltante-redes').innerText =
-                difRedes >= 0 ? `+${formatMoneda(difRedes)}` : `-${formatMoneda(Math.abs(difRedes))}`;
-            document.getElementById('faltante-infra').innerText =
-                difInfra >= 0 ? `+${formatMoneda(difInfra)}` : `-${formatMoneda(Math.abs(difInfra))}`;
+            document.getElementById('label-diferencia-infra').innerText = difInfra >= 0 ? 'Excedente:' : 'Faltante:';
 
-            document.getElementById('faltante-redes').className =
-                difRedes >= 0 ? 'font-black text-emerald-600' : 'font-black text-rose-600';
-            document.getElementById('faltante-infra').className =
-                difInfra >= 0 ? 'font-black text-emerald-600' : 'font-black text-rose-600';
+            document.getElementById('faltante-redes').innerText = formatMoneda(Math.abs(difRedes));
+
+            document.getElementById('faltante-infra').innerText = formatMoneda(Math.abs(difInfra));
 
             document.getElementById('avance-redes').innerText = `${avanceRedes.toFixed(2)}%`;
             document.getElementById('avance-infra').innerText = `${avanceInfra.toFixed(2)}%`;
