@@ -24,7 +24,7 @@
                     <i class="fas fa-bolt text-lg"></i>
                 </div>
                 <div>
-                    <h1 class="text-xl font-black tracking-tighter text-gray-800 leading-none">ERCONNECT Sales</h1>
+                    <h1 class="text-xl font-black tracking-tighter text-gray-800 leading-none">ERCONNECT Global</h1>
                     <span class="text-[9px] font-bold uppercase tracking-wider text-gray-400">Odoo Pipeline</span>
                 </div>
             </div>
@@ -77,53 +77,72 @@
 
             <!-- MAIN CONTENT -->
             <main class="p-4 md:p-6 space-y-6 max-w-[1600px] w-full mx-auto">
-                    <!-- AVANCE ACUMULADO POR Q -->
-<div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                
+                <!-- BLOQUE TRIMESTRAL GLOBAL -->
+                <div class="grid grid-cols-1 gap-4">
+                    <div class="bg-white rounded-2xl p-5 card-shadow border border-gray-100">
+                        <div class="flex justify-between items-center mb-3">
+                            <h3 class="font-black text-purple-900">📊 AVANCE TRIMESTRAL GLOBAL - ERCONNECT</h3>
+                            <select id="selector-q-metas" class="text-xs font-bold bg-purple-100 text-purple-700 px-2 py-1 rounded-full outline-none">
+                                <option value="Q1">Q1 · Acumulado</option>
+                                <option value="Q2" selected>Q2 · Acumulado</option>
+                                <option value="Q3">Q3 · Acumulado</option>
+                                <option value="Q4">Q4 · Acumulado</option>
+                            </select>
+                        </div>
 
-    <div class="bg-white rounded-2xl p-5 card-shadow border border-gray-100">
-        <div class="flex justify-between items-center mb-3">
-            <h3 class="font-black text-purple-900">REDES</h3>
-           <select id="selector-q-metas" class="text-xs font-bold bg-purple-100 text-purple-700 px-2 py-1 rounded-full outline-none">
-          <option value="Q1">Q1 · Acumulado</option>
-          <option value="Q2" selected>Q2 · Acumulado</option>
-          <option value="Q3">Q3 · Acumulado</option>
-          <option value="Q4">Q4 · Acumulado</option>
-    </select>
-        </div>
+                        <!-- Tarjetas de métricas -->
+                        <div class="grid grid-cols-2 md:grid-cols-4 gap-3 text-sm text-gray-600 mb-3">
+                            <div class="bg-purple-50 rounded-xl p-3">
+                                <p class="text-[9px] font-black uppercase text-gray-400">Meta Redes (ref)</p>
+                                <p id="meta-redes-ref" class="font-black text-gray-800">$0.00</p>
+                            </div>
+                            <div class="bg-purple-50 rounded-xl p-3">
+                                <p class="text-[9px] font-black uppercase text-gray-400">Meta Infraestructura (ref)</p>
+                                <p id="meta-infra-ref" class="font-black text-gray-800">$0.00</p>
+                            </div>
+                            <div class="bg-indigo-50 rounded-xl p-3">
+                                <p class="text-[9px] font-black uppercase text-gray-400">Meta Total</p>
+                                <p id="meta-total-q" class="font-black text-indigo-800">$0.00</p>
+                            </div>
+                            <div class="bg-indigo-50 rounded-xl p-3">
+                                <p class="text-[9px] font-black uppercase text-gray-400">Actual Total</p>
+                                <p id="actual-total-q" class="font-black text-indigo-800">$0.00</p>
+                            </div>
+                        </div>
 
-        <div class="space-y-1 text-sm text-gray-600">
-            <p>Meta acumulada: <span id="meta-redes" class="font-black text-gray-800"></span></p>
-            <p>Actual: <span id="actual-redes" class="font-black text-gray-800"></span></p>
-            <p><span id="label-diferencia-redes">Faltante:</span> <span id="faltante-redes" class="font-black"></span></p>
-            <p>Avance: <span id="avance-redes" class="font-black text-purple-700"></span></p>
-            <div class="w-full bg-gray-100 rounded-full h-2 mt-3">
-    <div id="barra-redes-q" class="bg-purple-600 h-2 rounded-full transition-all duration-300" style="width: 0%"></div>
-</div>
-<p id="estado-redes-q" class="text-[11px] font-black mt-2"></p>
-<p id="resumen-redes-q" class="text-[11px] text-gray-500 font-semibold mt-1"></p>
-        </div>
-    </div>
+                        <!-- Barra de progreso -->
+                        <div class="space-y-1 text-sm text-gray-600">
+                            <div class="flex justify-between">
+                                <span><span class="font-black">Avance:</span> <span id="avance-total-q" class="font-black text-purple-700">0%</span></span>
+                                <span><span id="label-diferencia-total-q">Faltante:</span> <span id="faltante-total-q" class="font-black"></span></span>
+                            </div>
+                            <div class="w-full bg-gray-100 rounded-full h-2 mt-1">
+                                <div id="barra-total-q" class="bg-purple-600 h-2 rounded-full transition-all duration-300" style="width: 0%"></div>
+                            </div>
+                            <p id="estado-total-q" class="text-[11px] font-black mt-2"></p>
+                            <p id="resumen-total-q" class="text-[11px] text-gray-500 font-semibold mt-1"></p>
+                        </div>
 
-    <div class="bg-white rounded-2xl p-5 card-shadow border border-gray-100">
-        <div class="flex justify-between items-center mb-3">
-            <h3 class="font-black text-purple-900">INFRAESTRUCTURA</h3>
-            <span id="q-infra" class="text-xs font-bold bg-purple-100 text-purple-700 px-2 py-1 rounded-full">Q2</span>
-        </div>
+                        <!-- DESGLOSE DE METAS TRIMESTRALES (más compacto y cercano) -->
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-2 text-[10px] text-gray-500 font-medium mt-3 pt-3 border-t border-gray-100">
+                            <div class="bg-purple-50/50 rounded-lg p-2 text-center">
+                                <span class="font-bold text-purple-700 block text-[9px] uppercase tracking-wider">Redes</span>
+                                <span>Q1 $150K · Q2 $250K · Q3 $350K · Q4 $250K</span>
+                            </div>
+                            <div class="bg-purple-50/50 rounded-lg p-2 text-center">
+                                <span class="font-bold text-purple-700 block text-[9px] uppercase tracking-wider">Infraestructura</span>
+                                <span>Q1 $450K · Q2 $750K · Q3 $1,050K · Q4 $750K</span>
+                            </div>
+                            <div class="bg-indigo-100/50 rounded-lg p-2 text-center border border-indigo-200/50">
+                                <span class="font-bold text-indigo-700 block text-[9px] uppercase tracking-wider">Total Global</span>
+                                <span class="font-bold text-indigo-800">Q1 $600K · Q2 $1,000K · Q3 $1,400K · Q4 $1,000K</span>
+                                <span class="block text-purple-700 font-black text-[10px] mt-0.5">→ $4,000,000 anual</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
 
-        <div class="space-y-1 text-sm text-gray-600">
-            <p>Meta acumulada: <span id="meta-infra" class="font-black text-gray-800"></span></p>
-            <p>Actual: <span id="actual-infra" class="font-black text-gray-800"></span></p>
-            <p><span id="label-diferencia-infra">Faltante:</span> <span id="faltante-infra" class="font-black"></span></p>
-            <p>Avance: <span id="avance-infra" class="font-black text-purple-700"></span></p>
-            <div class="w-full bg-gray-100 rounded-full h-2 mt-3">
-    <div id="barra-infra-q" class="bg-purple-600 h-2 rounded-full transition-all duration-300" style="width: 0%"></div>
-</div>
-<p id="estado-infra-q" class="text-[11px] font-black mt-2"></p>
-<p id="resumen-infra-q" class="text-[11px] text-gray-500 font-semibold mt-1"></p>
-        </div>
-    </div>
-
-</div>
                 <!-- 1. Bloque de Métricas de Control -->
                 <div class="grid grid-cols-2 lg:grid-cols-5 gap-3 md:gap-4">
                     <div class="bg-white p-4 rounded-2xl card-shadow border-b-4 border-rose-500 flex flex-col justify-between">
@@ -153,7 +172,7 @@
                     <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
                         <div class="flex flex-wrap items-baseline gap-2">
                             <span id="meta-ganado-main" class="text-2xl font-black text-purple-900">$0.00</span>
-                            <span id="label-meta-dinamica" class="text-xs text-gray-400 font-bold uppercase tracking-wider">CIERRE COMERCIAL EFECTIVO (META: $1,000,000.00 USD)</span>
+                            <span id="label-meta-dinamica" class="text-xs text-gray-400 font-bold uppercase tracking-wider">CIERRE COMERCIAL EFECTIVO (META: $4,000,000.00 USD)</span>
                             <span id="meta-porcentaje" class="bg-purple-100 text-purple-700 font-black text-[10px] px-2 py-0.5 rounded-full ml-2">0%</span>
                         </div>
                         
@@ -193,7 +212,7 @@
                         </div>
                         <div onclick="abrirDesgloseEtapa('Faltante Meta')" class="bg-rose-50/40 p-3 rounded-xl border border-rose-100/60 hover:bg-rose-50 transition-all cursor-pointer group">
                             <span class="text-[9px] font-black text-rose-600 uppercase tracking-wider flex items-center justify-between"><span class="flex items-center gap-1"><i class="fas fa-bullseye"></i> Faltante Meta</span> <i class="fas fa-chevron-right opacity-0 group-hover:opacity-100 text-[8px] transition-all"></i></span>
-                            <p id="monto-faltante" class="text-sm font-black text-rose-600 mt-1">$1,000,000.00</p>
+                            <p id="monto-faltante" class="text-sm font-black text-rose-600 mt-1">$4,000,000.00</p>
                         </div>
                         <div onclick="abrirDesgloseEtapa('Perdido')" class="bg-slate-50/80 p-3 rounded-xl border border-gray-100 hover:border-rose-400 hover:bg-rose-50/20 transition-all cursor-pointer group">
                             <span class="text-[9px] font-black text-gray-400 uppercase tracking-wider flex items-center justify-between"><span class="flex items-center gap-1"><i class="fas fa-times-circle"></i> Perdido</span> <i class="fas fa-chevron-right opacity-0 group-hover:opacity-100 text-[8px] transition-all"></i></span>
@@ -221,8 +240,6 @@
                     <div class="flex flex-col sm:flex-row gap-2 w-full md:w-auto">
                         <select id="filtro-area" class="flex-1 md:w-48 p-3 bg-purple-50 text-purple-700 rounded-xl text-sm outline-none font-bold border border-transparent cursor-pointer">
                             <option value="Todos">Todas las Áreas</option>
-                            <option value="Redes">Área: Redes</option>
-                            <option value="Infraestructura">Área: Infraestructura</option>
                         </select>
                         <select id="filtro-estado" class="flex-1 md:w-48 p-3 bg-gray-50 rounded-xl text-sm outline-none text-gray-600 font-bold border border-transparent cursor-pointer">
                             <option value="Todos">Todas las etapas</option>
@@ -275,10 +292,7 @@
                 <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
                     <div class="md:col-span-1">
                         <label class="text-[10px] font-black text-gray-400 uppercase ml-1">Área Comercial</label>
-                        <select id="area" class="w-full p-3.5 bg-purple-50 text-purple-800 rounded-xl outline-none font-bold" required>
-                            <option value="Redes">Redes ($1M Meta)</option>
-                            <option value="Infraestructura">Infraestructura ($3M Meta)</option>
-                        </select>
+                        <input type="text" id="area" value="ERCONNECT Global" readonly class="w-full p-3.5 bg-purple-50 text-purple-800 rounded-xl outline-none font-bold cursor-not-allowed">
                     </div>
                     <div class="md:col-span-1">
                         <label class="text-[10px] font-black text-gray-400 uppercase ml-1">No. Proyecto</label>
@@ -374,40 +388,62 @@
         let cacheProyectos = [];
         let clienteSeleccionado = null;
         let periodosInicializados = false;
-        const METAS_Q = {
-    Redes: {
-        Q1: 150000,
-        Q2: 250000,
-        Q3: 350000,
-        Q4: 250000
-    },
-    Infraestructura: {
-        Q1: 450000,
-        Q2: 750000,
-        Q3: 1050000,
-        Q4: 750000
-    }
-};
+        
+        // METAS TRIMESTRALES POR ÁREA (solo para referencia visual)
+        const METAS_Q_REF = {
+            Redes: {
+                Q1: 150000,
+                Q2: 250000,
+                Q3: 350000,
+                Q4: 250000
+            },
+            Infraestructura: {
+                Q1: 450000,
+                Q2: 750000,
+                Q3: 1050000,
+                Q4: 750000
+            }
+        };
 
-function obtenerQSeleccionado() {
-    const selector = document.getElementById('selector-q-metas');
-    return selector ? selector.value : 'Q2';
-}
+        // META GLOBAL POR TRIMESTRE (Redes + Infraestructura)
+        const METAS_Q_TOTAL = {
+            Q1: 600000,   // 150K + 450K
+            Q2: 1000000,  // 250K + 750K
+            Q3: 1400000,  // 350K + 1050K
+            Q4: 1000000   // 250K + 750K
+        };
 
-function obtenerMetaAcumulada(area) {
-    const metas = METAS_Q[area];
-    const qActual = document.getElementById('selector-q-metas')?.value || 'Q2';
+        // META GLOBAL ACUMULADA (para todos los trimestres) = $4,000,000
+        const META_GLOBAL_TOTAL = 4000000;
 
-    let acumulado = 0;
+        function obtenerQSeleccionado() {
+            const selector = document.getElementById('selector-q-metas');
+            return selector ? selector.value : 'Q2';
+        }
 
-    if (qActual === 'Q1') acumulado = metas.Q1;
-    if (qActual === 'Q2') acumulado = metas.Q1 + metas.Q2;
-    if (qActual === 'Q3') acumulado = metas.Q1 + metas.Q2 + metas.Q3;
-    if (qActual === 'Q4') acumulado = metas.Q1 + metas.Q2 + metas.Q3 + metas.Q4;
+        function obtenerMetaAcumuladaGlobal() {
+            const qActual = obtenerQSeleccionado();
+            let acumulado = 0;
+            const qKeys = ['Q1', 'Q2', 'Q3', 'Q4'];
+            
+            for (const q of qKeys) {
+                acumulado += METAS_Q_TOTAL[q] || 0;
+                if (q === qActual) break;
+            }
+            
+            return acumulado;
+        }
 
-    return acumulado;
-}
-      
+        function obtenerMetaRedesQ() {
+            const qActual = obtenerQSeleccionado();
+            return METAS_Q_REF.Redes[qActual] || 0;
+        }
+
+        function obtenerMetaInfraQ() {
+            const qActual = obtenerQSeleccionado();
+            return METAS_Q_REF.Infraestructura[qActual] || 0;
+        }
+
         const TIEMPO_PROTECCION_CAMBIOS_MS = 120000;
         const cambiosLocalesPorFila = new Map();
         const filasEliminadasLocales = new Map();
@@ -470,12 +506,8 @@ function obtenerMetaAcumulada(area) {
         };
 
         const normalizarArea = (valor) => {
-            const area = limpiarTexto(valor).toLowerCase();
-
-            if (area.includes('red')) return 'Redes';
-            if (area.includes('infra')) return 'Infraestructura';
-
-            return limpiarTexto(valor) || 'Infraestructura';
+            // Siempre retornamos "ERCONNECT Global" ya que todo está unificado
+            return 'ERCONNECT Global';
         };
 
         const normalizarFecha = (valor) => {
@@ -680,10 +712,7 @@ function obtenerMetaAcumulada(area) {
         };
 
         const obtenerMetaGlobalActual = () => {
-            const areaFiltro = document.getElementById('filtro-area').value;
-            if (areaFiltro === 'Redes') return 1000000;
-            if (areaFiltro === 'Infraestructura') return 3000000;
-            return 4000000; 
+            return META_GLOBAL_TOTAL; // $4,000,000
         };
 
         const actualizarSelectorPeriodos = (proyectos) => {
@@ -722,7 +751,7 @@ function obtenerMetaAcumulada(area) {
             document.getElementById('form-proyecto').reset();
             document.getElementById('edit-id').value = '';
             document.getElementById('modal-titulo').innerText = 'Nueva Oportunidad Manual';
-            document.getElementById('area').value = 'Redes';
+            document.getElementById('area').value = 'ERCONNECT Global';
             document.getElementById('estado').value = 'Enviado';
             document.getElementById('modal-proyecto').classList.remove('hidden');
         };
@@ -734,7 +763,7 @@ function obtenerMetaAcumulada(area) {
             const periodo = document.getElementById('filtro-periodo').value;
             const areaFiltro = document.getElementById('filtro-area').value;
             document.getElementById('desglose-titulo-etapa').innerText = `Desglose: ${etapa}`;
-            document.getElementById('desglose-periodo-texto').innerText = `Área: ${areaFiltro} | Filtro: ${periodo}`;
+            document.getElementById('desglose-periodo-texto').innerText = `Filtro: ${periodo}`;
 
             const contenedorLista = document.getElementById('desglose-lista-proyectos');
             contenedorLista.innerHTML = '';
@@ -742,18 +771,16 @@ function obtenerMetaAcumulada(area) {
 
             cacheProyectos.forEach(({ d }) => {
                 const est = d.estado || 'Enviado';
-                const areaProyecto = d.area || 'Redes';
-                const fechaLimite = d.fecha || ''; 
+                const fechaLimite = d.fecha || '';
 
                 if (periodo !== 'Todos' && !fechaLimite.startsWith(periodo)) return;
-                if (areaFiltro !== 'Todos' && areaProyecto !== areaFiltro) return;
 
                 if (etapa !== 'Faltante Meta' && est === etapa) {
                     totalAcumulado += (parseFloat(d.monto) || 0);
                     contenedorLista.innerHTML += `
                         <div class="p-3 bg-slate-50 rounded-xl border border-gray-100 flex justify-between items-center hover:bg-gray-100/50 transition-all">
                             <div>
-                                <h4 class="font-bold text-gray-800 text-xs">${obtenerNoProyecto(d) || '--'} · ${obtenerCliente(d) || 'Sin cliente'} <span class="text-[9px] bg-purple-100 text-purple-700 px-1 rounded font-normal">${areaProyecto}</span></h4>
+                                <h4 class="font-bold text-gray-800 text-xs">${obtenerNoProyecto(d) || '--'} · ${obtenerCliente(d) || 'Sin cliente'}</h4>
                                 <p class="text-[11px] text-gray-400 font-medium truncate max-w-[280px]">${obtenerNombreOportunidad(d)}</p>
                             </div>
                             <div class="text-right">
@@ -768,9 +795,8 @@ function obtenerMetaAcumulada(area) {
                 let sumaPositivos = 0;
                 cacheProyectos.forEach(({ d }) => {
                     const est = d.estado || 'Enviado';
-                    const areaProyecto = d.area || 'Redes';
                     const fechaLimite = d.fecha || '';
-                    if ((periodo === 'Todos' || fechaLimite.startsWith(periodo)) && (areaFiltro === 'Todos' || areaProyecto === areaFiltro) && ['Ganado', 'Ganado sin PO', 'Facturado', 'Pagado'].includes(est)) {
+                    if ((periodo === 'Todos' || fechaLimite.startsWith(periodo)) && ['Ganado', 'Ganado sin PO', 'Facturado', 'Pagado'].includes(est)) {
                         sumaPositivos += (parseFloat(d.monto) || 0);
                     }
                 });
@@ -779,7 +805,7 @@ function obtenerMetaAcumulada(area) {
                 contenedorLista.innerHTML = `
                     <div class="p-4 text-center text-xs font-medium text-gray-500">
                         <i class="fas fa-info-circle text-purple-500 mb-2 text-base block"></i>
-                        Meta de este segmento: <span class="font-bold text-purple-900">${formatMoneda(metaDinamica)} USD</span>.
+                        Meta global: <span class="font-bold text-purple-900">${formatMoneda(metaDinamica)} USD</span>.
                     </div>`;
             }
 
@@ -800,7 +826,7 @@ function obtenerMetaAcumulada(area) {
             ingreso_esperado: parseFloat(document.getElementById('monto').value) || 0,
             prioridad: document.getElementById('prioridad').value,
             fecha_limite: document.getElementById('fecha').value,
-            area: document.getElementById('area').value,
+            area: 'ERCONNECT Global',
             porcentaje: parseInt(document.getElementById('progreso').value) || 0
         });
 
@@ -954,7 +980,7 @@ function obtenerMetaAcumulada(area) {
 
             const d = proyecto.d;
             document.getElementById('edit-id').value = id;
-            document.getElementById('area').value = d.area || 'Redes';
+            document.getElementById('area').value = 'ERCONNECT Global';
             document.getElementById('inputNoProyecto').value = d.no_proyecto || '';
             document.getElementById('inputCliente').value = d.cliente || '';
             document.getElementById('inputNombreOportunidad').value = d.nombre || d.tarea || '';
@@ -1013,13 +1039,13 @@ function obtenerMetaAcumulada(area) {
             return cacheProyectos.filter(proyecto => {
                 const { d } = proyecto;
                 const estReal = d.estado || 'Enviado';
-                const areaProyecto = d.area || 'Redes';
 
                 const cumpleCliente = !clienteSeleccionado || d.cliente === clienteSeleccionado;
                 const textoBusqueda = `${obtenerNoProyecto(d)} ${obtenerCliente(d)} ${obtenerNombreOportunidad(d)} ${d.solucion || ''}`.toLowerCase();
                 const cumpleBusqueda = textoBusqueda.includes(queryBusqueda);
                 const cumpleEstado = (filterState === 'Todos') || (estReal === filterState);
-                const cumpleArea = (areaFiltro === 'Todos') || (areaProyecto === areaFiltro);
+                // Siempre cumple área porque solo hay "Todos" disponible
+                const cumpleArea = true;
 
                 return cumpleCliente && cumpleBusqueda && cumpleEstado && cumpleArea;
             });
@@ -1056,7 +1082,6 @@ function obtenerMetaAcumulada(area) {
 
             const filas = proyectos.map(({ id, d }) => {
                 const estReal = d.estado || 'Enviado';
-                const areaProyecto = d.area || 'Redes';
                 const prioColor = obtenerPrioridadColor(d.prioridad);
 
                 return `
@@ -1064,7 +1089,7 @@ function obtenerMetaAcumulada(area) {
                         <td class="p-4 align-middle">
                             <p class="font-black text-purple-900 text-sm leading-tight">${obtenerNoProyecto(d) || '--'}</p>
                             <p class="text-[11px] font-bold text-gray-500 mt-0.5">${obtenerCliente(d) || 'Sin cliente'}</p>
-                            <span class="text-[9px] font-bold px-1.5 py-0.5 bg-purple-100 text-purple-700 rounded uppercase tracking-wide mt-1 inline-block">${areaProyecto}</span>
+                            <span class="text-[9px] font-bold px-1.5 py-0.5 bg-purple-100 text-purple-700 rounded uppercase tracking-wide mt-1 inline-block">ERCONNECT Global</span>
                         </td>
                         <td class="p-4 align-middle max-w-xs">
                             <p class="font-bold text-gray-700 leading-tight">${obtenerNombreOportunidad(d)}</p>
@@ -1178,93 +1203,81 @@ function obtenerMetaAcumulada(area) {
         };
 
         const actualizarMetasQ = () => {
-            const totalPorArea = {
-                Redes: 0,
-                Infraestructura: 0
-            };
+            // Calcular totales ganados de toda la empresa (sin distinguir área)
+            let totalGanado = 0;
 
             cacheProyectos.forEach(({ d }) => {
                 const est = d.estado || 'Enviado';
-                const areaProyecto = d.area || 'Redes';
                 const monto = parseFloat(d.monto) || 0;
 
                 if (['Ganado', 'Ganado sin PO', 'Facturado', 'Pagado'].includes(est)) {
-                    if (areaProyecto === 'Redes') totalPorArea.Redes += monto;
-                    if (areaProyecto === 'Infraestructura') totalPorArea.Infraestructura += monto;
+                    totalGanado += monto;
                 }
             });
 
             const qSeleccionado = obtenerQSeleccionado();
-            const metaRedes = obtenerMetaAcumulada('Redes');
-            const metaInfra = obtenerMetaAcumulada('Infraestructura');
-            const difRedes = totalPorArea.Redes - metaRedes;
-            const difInfra = totalPorArea.Infraestructura - metaInfra;
-            const avanceRedes = metaRedes > 0 ? (totalPorArea.Redes / metaRedes) * 100 : 0;
-            const avanceInfra = metaInfra > 0 ? (totalPorArea.Infraestructura / metaInfra) * 100 : 0;
+            
+            // Metas por área para el Q seleccionado (solo para referencia visual)
+            const metaRedesQ = obtenerMetaRedesQ();
+            const metaInfraQ = obtenerMetaInfraQ();
+            
+            // Meta total acumulada hasta el Q seleccionado
+            const metaTotalAcumulada = obtenerMetaAcumuladaGlobal();
+            
+            // Actual total (toda la empresa)
+            const actualTotal = totalGanado;
+            
+            // Diferencia total
+            const difTotal = actualTotal - metaTotalAcumulada;
+            
+            // Avance total
+            const avanceTotal = metaTotalAcumulada > 0 ? (actualTotal / metaTotalAcumulada) * 100 : 0;
 
-            document.getElementById('q-infra').innerText = qSeleccionado;
-            document.getElementById('meta-redes').innerText = formatMoneda(metaRedes);
-            document.getElementById('meta-infra').innerText = formatMoneda(metaInfra);
-            document.getElementById('actual-redes').innerText = formatMoneda(totalPorArea.Redes);
-            document.getElementById('actual-infra').innerText = formatMoneda(totalPorArea.Infraestructura);
-            document.getElementById('label-diferencia-redes').innerText = difRedes >= 0 ? 'Excedente:' : 'Faltante:';
+            // Mostrar metas por área (solo referencia visual)
+            document.getElementById('meta-redes-ref').innerHTML = `${formatMoneda(metaRedesQ)} <span class="text-[8px] font-normal text-gray-400">(${qSeleccionado})</span>`;
+            document.getElementById('meta-infra-ref').innerHTML = `${formatMoneda(metaInfraQ)} <span class="text-[8px] font-normal text-gray-400">(${qSeleccionado})</span>`;
+            
+            // Meta total y actual total
+            document.getElementById('meta-total-q').innerHTML = `${formatMoneda(metaTotalAcumulada)} <span class="text-[8px] font-normal text-gray-400">Acum. ${qSeleccionado}</span>`;
+            document.getElementById('actual-total-q').innerText = formatMoneda(actualTotal);
+            
+            document.getElementById('label-diferencia-total-q').innerText = difTotal >= 0 ? 'Excedente:' : 'Faltante:';
+            document.getElementById('faltante-total-q').innerText = formatMoneda(Math.abs(difTotal));
+            document.getElementById('avance-total-q').innerText = `${avanceTotal.toFixed(2)}%`;
+            
+            // Barra de progreso
+            const barra = document.getElementById('barra-total-q');
+            const estado = document.getElementById('estado-total-q');
+            const resumen = document.getElementById('resumen-total-q');
 
-            document.getElementById('label-diferencia-infra').innerText = difInfra >= 0 ? 'Excedente:' : 'Faltante:';
+            const porcentaje = Math.min(100, avanceTotal);
+            barra.style.width = `${porcentaje}%`;
 
-            document.getElementById('faltante-redes').innerText = formatMoneda(Math.abs(difRedes));
-
-            document.getElementById('faltante-infra').innerText = formatMoneda(Math.abs(difInfra));
-
-            document.getElementById('avance-redes').innerText = `${avanceRedes.toFixed(2)}%`;
-            document.getElementById('avance-infra').innerText = `${avanceInfra.toFixed(2)}%`;
-            const pintarEstadoQ = (avance, barraId, estadoId) => {
-    const barra = document.getElementById(barraId);
-    const estado = document.getElementById(estadoId);
-
-    const porcentaje = Math.min(100, avance);
-    barra.style.width = `${porcentaje}%`;
-
-    if (avance >= 100) {
-        barra.className = 'bg-emerald-500 h-2 rounded-full transition-all duration-300';
-        estado.className = 'text-[11px] font-black mt-2 text-emerald-600';
-        estado.innerText = 'META CUMPLIDA';
-    } else if (avance >= 80) {
-        barra.className = 'bg-amber-400 h-2 rounded-full transition-all duration-300';
-        estado.className = 'text-[11px] font-black mt-2 text-amber-600';
-        estado.innerText = 'CERCA DE LA META';
-    } else {
-        barra.className = 'bg-rose-500 h-2 rounded-full transition-all duration-300';
-        estado.className = 'text-[11px] font-black mt-2 text-rose-600';
-        estado.innerText = 'EN RIESGO';
-    }
-};
-
-pintarEstadoQ(avanceRedes, 'barra-redes-q', 'estado-redes-q');
-pintarEstadoQ(avanceInfra, 'barra-infra-q', 'estado-infra-q');
-
-            const resumenRedes = document.getElementById('resumen-redes-q');
-            const resumenInfra = document.getElementById('resumen-infra-q');
-
-            if (resumenRedes) {
-                resumenRedes.innerText = difRedes >= 0
-                    ? `Redes supera la meta acumulada de ${qSeleccionado} por ${formatMoneda(difRedes)}.`
-                    : `Faltan ${formatMoneda(Math.abs(difRedes))} para alcanzar la meta acumulada de ${qSeleccionado}.`;
+            if (avanceTotal >= 100) {
+                barra.className = 'bg-emerald-500 h-2 rounded-full transition-all duration-300';
+                estado.className = 'text-[11px] font-black mt-2 text-emerald-600';
+                estado.innerText = '✅ META CUMPLIDA';
+            } else if (avanceTotal >= 80) {
+                barra.className = 'bg-amber-400 h-2 rounded-full transition-all duration-300';
+                estado.className = 'text-[11px] font-black mt-2 text-amber-600';
+                estado.innerText = '⚠️ CERCA DE LA META';
+            } else {
+                barra.className = 'bg-rose-500 h-2 rounded-full transition-all duration-300';
+                estado.className = 'text-[11px] font-black mt-2 text-rose-600';
+                estado.innerText = '🔴 EN RIESGO';
             }
 
-            if (resumenInfra) {
-                resumenInfra.innerText = difInfra >= 0
-                    ? `Infraestructura supera la meta acumulada de ${qSeleccionado} por ${formatMoneda(difInfra)}.`
-                    : `Faltan ${formatMoneda(Math.abs(difInfra))} para alcanzar la meta acumulada de ${qSeleccionado}.`;
+            if (resumen) {
+                resumen.innerText = difTotal >= 0
+                    ? `ERCONNECT Global supera la meta acumulada de ${qSeleccionado} por ${formatMoneda(difTotal)}.`
+                    : `Faltan ${formatMoneda(Math.abs(difTotal))} para alcanzar la meta acumulada de ${qSeleccionado}.`;
             }
         };
 
         const actualizarSidebarClientes = () => {
-            const areaFiltro = document.getElementById('filtro-area').value;
             const cuentasMapeadas = {};
 
             cacheProyectos.forEach(({ d }) => {
-                const areaProyecto = d.area || 'Redes';
-                if (areaFiltro !== 'Todos' && areaProyecto !== areaFiltro) return;
                 if (d.cliente) cuentasMapeadas[d.cliente] = (cuentasMapeadas[d.cliente] || 0) + 1;
             });
 
@@ -1296,13 +1309,12 @@ pintarEstadoQ(avanceInfra, 'barra-infra-q', 'estado-infra-q');
 
         document.getElementById('buscador').addEventListener('input', debounce(aplicarFiltrosYRenderizar, 250));
         document.getElementById('filtro-estado').addEventListener('change', aplicarFiltrosYRenderizar);
+        // El filtro de área ya no tiene opciones, pero dejamos el evento por si acaso
         document.getElementById('filtro-area').addEventListener('change', () => window.forzarRecalculoFinanciero());
         document.getElementById('filtro-periodo').addEventListener('change', () => window.forzarRecalculoFinanciero());
         document.getElementById('selector-q-metas').addEventListener('change', () => {
-        const qSeleccionado = document.getElementById('selector-q-metas').value;
-        document.getElementById('q-infra').innerText = qSeleccionado;
-        window.forzarRecalculoFinanciero();
-});
+            window.forzarRecalculoFinanciero();
+        });
         
         window.addEventListener('resize', debounce(aplicarFiltrosYRenderizar, 200));
 
@@ -1310,16 +1322,12 @@ pintarEstadoQ(avanceInfra, 'barra-infra-q', 'estado-infra-q');
             let alta=0, media=0, baja=0, comp=0, perd=0;
             let dolEnviado=0, dolStandby=0, dolGanadoSinPo=0, dolGanado=0, dolFacturado=0, dolPagado=0, dolPerdido=0;
             const periodoSeleccionado = document.getElementById('filtro-periodo').value;
-            const areaFiltro = document.getElementById('filtro-area').value;
 
             cacheProyectos.forEach(proyecto => {
                 const d = proyecto.d;
                 const monto = parseFloat(d.monto) || 0;
                 const est = d.estado || 'Enviado';
-                const areaProyecto = d.area || 'Redes';
                 const fechaLimite = d.fecha || '';
-
-                if (areaFiltro !== 'Todos' && areaProyecto !== areaFiltro) return;
 
                 if (d.prioridad === 'Urgente' || d.prioridad === 'Alta') alta++;
                 if (d.prioridad === 'Media') media++;
@@ -1390,17 +1398,15 @@ pintarEstadoQ(avanceInfra, 'barra-infra-q', 'estado-infra-q');
 
             cacheProyectos.forEach(({ d }) => {
                 const estReal = d.estado || 'Enviado';
-                const areaProyecto = d.area || 'Redes';
                 const fechaLimite = d.fecha || '';
 
-                if (areaFiltro !== 'Todos' && areaProyecto !== areaFiltro) return;
                 if (estadoFiltro !== 'Todos' && estReal !== estadoFiltro) return;
                 if (periodoFiltro !== 'Todos' && !fechaLimite.startsWith(periodoFiltro)) return;
 
                 datos.push({
                     "No. Proyecto": obtenerNoProyecto(d),
                     "Cliente": obtenerCliente(d),
-                    "Área": areaProyecto,
+                    "Área": "ERCONNECT Global",
                     "Oportunidad": obtenerNombreOportunidad(d),
                     "Notas / Solución Técnica": d.solucion || '',
                     "Prioridad": d.prioridad || 'Media',
@@ -1426,7 +1432,7 @@ pintarEstadoQ(avanceInfra, 'barra-infra-q', 'estado-infra-q');
             ];
 
             XLSX.utils.book_append_sheet(wb, ws, "Pipeline");
-            XLSX.writeFile(wb, "Reporte_Pipeline_Estructurado.xlsx");
+            XLSX.writeFile(wb, "Reporte_Pipeline_ERCONNECT_Global.xlsx");
         };
 
 
@@ -1448,6 +1454,7 @@ pintarEstadoQ(avanceInfra, 'barra-infra-q', 'estado-infra-q');
 
         document.getElementById('mobileMenuBtn')?.addEventListener('click', abrirSidebarMovil);
         document.getElementById('sidebar-overlay')?.addEventListener('click', cerrarSidebarMovil);
+        
         function actualizarFechaActual() {
         const fecha = new Date();
 
